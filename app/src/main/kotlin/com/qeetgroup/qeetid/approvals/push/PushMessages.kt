@@ -36,8 +36,7 @@ object PushMessages {
         val linked = runBlocking { container.links.get() } != null
         if (!linked) return
         SignInNotifications.show(context, id)
-        if (ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            container.inbox.openRequest(id)
-        }
+        val inFront = ProcessLifecycleOwner.get().lifecycle.currentState
+        if (inFront.isAtLeast(Lifecycle.State.STARTED)) container.inbox.openRequest(id)
     }
 }

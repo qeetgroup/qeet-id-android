@@ -10,12 +10,14 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -57,7 +59,12 @@ import kotlinx.coroutines.launch
 /** The close (X) button of a screen opened over another. */
 @Composable
 fun CloseButton(onClick: () -> Unit) {
-    QeetrixIconButton(QeetrixIconName.X, stringResource(com.qeetgroup.qeetid.R.string.action_close), onClick = onClick, tone = QeetrixButtonTone.Neutral)
+    QeetrixIconButton(
+        QeetrixIconName.X,
+        stringResource(com.qeetgroup.qeetid.R.string.action_close),
+        onClick = onClick,
+        tone = QeetrixButtonTone.Neutral,
+    )
 }
 
 /** Back on the Accounts screen, saying [issuer] was added. */
@@ -103,10 +110,12 @@ fun ScanAccountRoute(navController: NavHostController) {
                         }
                         true
                     }
+
                     OtpAuthResult.CounterBased -> {
                         problem = ScanProblem.CounterBased
                         false
                     }
+
                     OtpAuthResult.Invalid -> {
                         val code = if (PairingCode.isPairingLink(text)) PairingCode.from(text) else null
                         if (code != null) {
@@ -130,7 +139,10 @@ fun ScanAccountRoute(navController: NavHostController) {
             description = stringResource(shown.body),
             actions =
                 listOf(
-                    QeetrixDialogAction(stringResource(R.string.action_cancel), QeetrixDialogActionRole.Cancel) { navController.popBackStack() },
+                    QeetrixDialogAction(
+                        stringResource(R.string.action_cancel),
+                        QeetrixDialogActionRole.Cancel,
+                    ) { navController.popBackStack() },
                     QeetrixDialogAction(stringResource(R.string.action_try_again)) { problem = null },
                 ),
         )
@@ -145,8 +157,8 @@ fun TypeKeyRoute(navController: NavHostController) {
     val service = rememberTextFieldState()
     val account = rememberTextFieldState()
     val key = rememberTextFieldState()
-    var digits by rememberSaveable { mutableStateOf(6) }
-    var period by rememberSaveable { mutableStateOf(30) }
+    var digits by rememberSaveable { mutableIntStateOf(6) }
+    var period by rememberSaveable { mutableIntStateOf(30) }
     var algorithm by rememberSaveable { mutableStateOf(TotpAlgorithm.SHA1) }
     var advanced by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var serviceError by remember { mutableStateOf<Int?>(null) }
@@ -155,11 +167,22 @@ fun TypeKeyRoute(navController: NavHostController) {
     val scroll = rememberScrollState()
 
     fun submit() {
-        when (val result = TypeKeyForm.validate(service.text.toString(), account.text.toString(), key.text.toString(), digits, period, algorithm)) {
+        when (
+            val result =
+                TypeKeyForm.validate(
+                    service.text.toString(),
+                    account.text.toString(),
+                    key.text.toString(),
+                    digits,
+                    period,
+                    algorithm,
+                )
+        ) {
             is TypeKeyForm.Result.Invalid -> {
                 serviceError = result.serviceError
                 keyError = result.keyError
             }
+
             is TypeKeyForm.Result.Valid -> {
                 serviceError = null
                 keyError = null
@@ -212,7 +235,12 @@ fun TypeKeyRoute(navController: NavHostController) {
                 stringResource(R.string.type_key_account),
                 placeholder = stringResource(R.string.type_key_account_placeholder),
                 optional = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, autoCorrectEnabled = false, imeAction = ImeAction.Next),
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        autoCorrectEnabled = false,
+                        imeAction = ImeAction.Next,
+                    ),
             )
             QeetrixTextField(
                 key,
@@ -234,18 +262,31 @@ fun TypeKeyRoute(navController: NavHostController) {
                 QeetrixAccordionItem(ADVANCED, stringResource(R.string.type_key_advanced)) {
                     Column(verticalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd)) {
                         QeetrixText(
-                            stringResource(R.string.type_key_summary, digits, period, algorithmLabel(algorithm)),
+                            stringResource(
+                                R.string.type_key_summary,
+                                pluralStringResource(R.plurals.type_key_digits_count, digits, digits),
+                                pluralStringResource(R.plurals.type_key_every_seconds, period, period),
+                                algorithmLabel(algorithm),
+                            ),
                             size = QeetrixTextSize.Sm,
                             tone = QeetrixTextTone.Subtle,
                         )
                         Labelled(stringResource(R.string.type_key_digits)) {
-                            QeetrixSegmentedControl(digits, { digits = it }, listOf(QeetrixOption(6, "6"), QeetrixOption(8, "8")), Modifier.fillMaxWidth())
+                            QeetrixSegmentedControl(
+                                digits,
+                                { digits = it },
+                                listOf(QeetrixOption(6, "6"), QeetrixOption(8, "8")),
+                                Modifier.fillMaxWidth(),
+                            )
                         }
                         Labelled(stringResource(R.string.type_key_period)) {
                             QeetrixSegmentedControl(
                                 period,
                                 { period = it },
-                                listOf(QeetrixOption(30, stringResource(R.string.period_30)), QeetrixOption(60, stringResource(R.string.period_60))),
+                                listOf(
+                                    QeetrixOption(30, stringResource(R.string.period_30)),
+                                    QeetrixOption(60, stringResource(R.string.period_60)),
+                                ),
                                 Modifier.fillMaxWidth(),
                             )
                         }

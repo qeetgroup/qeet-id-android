@@ -161,7 +161,12 @@ class QeetIdApi(
                         if (claim.userId.isBlank() || claim.device.id.isBlank() || claim.deviceToken.isBlank()) {
                             ClaimResult.Refused(null)
                         } else {
-                            ClaimResult.Linked(claim.userId, claim.device.id, claim.deviceToken, claim.account?.email?.takeIf { it.isNotBlank() })
+                            ClaimResult.Linked(
+                                claim.userId,
+                                claim.device.id,
+                                claim.deviceToken,
+                                claim.account?.email?.takeIf { it.isNotBlank() },
+                            )
                         }
                     }
 
@@ -184,13 +189,23 @@ class QeetIdApi(
         try {
             get(url("mfa", "push", "challenges", id)).use { res ->
                 when {
-                    res.code == 404 || res.code == 400 -> FetchResult.NotFound
-                    !res.isSuccessful -> FetchResult.Network
+                    res.code == 404 || res.code == 400 -> {
+                        FetchResult.NotFound
+                    }
+
+                    !res.isSuccessful -> {
+                        FetchResult.Network
+                    }
+
                     else -> {
                         val request = decode(SignInRequest.serializer(), res) ?: return FetchResult.Network
                         val expires = parseTime(request.expiresAt) ?: return FetchResult.Network
                         // The server's clock, from its Date header, so the time left is right even when the phone's is not.
-                        val offset = res.headers.getDate("Date")?.time?.let { it - now() } ?: 0L
+                        val offset =
+                            res.headers
+                                .getDate("Date")
+                                ?.time
+                                ?.let { it - now() } ?: 0L
                         FetchResult.Found(request, expires - offset)
                     }
                 }
@@ -288,8 +303,11 @@ class QeetIdApi(
                 when {
                     // A route the server does not have answers 404 or 405 with no error code of Qeet ID's.
                     (res.code == 404 || res.code == 405) && error?.code == null -> PushTokenResult.NotSupported
+
                     res.code == 401 -> PushTokenResult.Unauthorized
+
                     res.code in 500..599 -> PushTokenResult.Network
+
                     else -> PushTokenResult.Refused(error?.message)
                 }
             }

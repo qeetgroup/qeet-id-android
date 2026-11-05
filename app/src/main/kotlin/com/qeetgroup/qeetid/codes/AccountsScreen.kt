@@ -42,10 +42,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.system.NotificationAccess
-import com.qeetgroup.qeetid.ui.Accounts
 import com.qeetgroup.qeetid.ui.LetterTile
 import com.qeetgroup.qeetid.ui.LinkPhone
 import com.qeetgroup.qeetid.ui.LocalAppContainer
@@ -102,11 +102,13 @@ import java.time.Instant
 const val ADDED_ACCOUNT_KEY = "added_account"
 
 @Composable
-fun AccountsRoute(navController: NavHostController) {
+fun AccountsRoute(
+    navController: NavHostController,
+    entry: NavBackStackEntry,
+) {
     val container = LocalAppContainer.current
     val model = viewModel { AccountsViewModel(container) }
     val state by model.state.collectAsStateWithLifecycle()
-    val entry = remember(navController) { navController.getBackStackEntry(Accounts) }
     val added by entry.savedStateHandle.getStateFlow<String?>(ADDED_ACCOUNT_KEY, null).collectAsStateWithLifecycle()
     AccountsScreen(
         state = state,
@@ -161,8 +163,16 @@ fun AccountsScreen(
     LaunchedEffect(model) {
         model.events.collect { message ->
             when (message) {
-                AccountsMessage.Copied -> snackbars.show(copiedTitle, QeetrixSnackbarTone.Success, copiedNote)
-                is AccountsMessage.Deleted -> snackbars.show(resources.getString(R.string.account_deleted, message.issuer), QeetrixSnackbarTone.Success)
+                AccountsMessage.Copied -> {
+                    snackbars.show(copiedTitle, QeetrixSnackbarTone.Success, copiedNote)
+                }
+
+                is AccountsMessage.Deleted -> {
+                    snackbars.show(
+                        resources.getString(R.string.account_deleted, message.issuer),
+                        QeetrixSnackbarTone.Success,
+                    )
+                }
             }
         }
     }
@@ -278,7 +288,12 @@ fun AccountsScreen(
                     }
                     item(key = "search") {
                         val search = rememberTextFieldState(state.query)
-                        Box(Modifier.background(QeetrixTheme.colors.surfaceRaised).padding(horizontal = QeetrixSpace.InsetLg, vertical = QeetrixSpace.InsetMd)) {
+                        Box(
+                            Modifier
+                                .background(
+                                    QeetrixTheme.colors.surfaceRaised,
+                                ).padding(horizontal = QeetrixSpace.InsetLg, vertical = QeetrixSpace.InsetMd),
+                        ) {
                             QeetrixSearchField(
                                 search,
                                 modifier = Modifier.fillMaxWidth(),
@@ -316,7 +331,16 @@ fun AccountsScreen(
                                 },
                                 onCopied = model::copied,
                             )
-                            QeetrixSeparator(tone = if (row == state.rows.last()) QeetrixSeparatorTone.Default else QeetrixSeparatorTone.Subtle)
+                            QeetrixSeparator(
+                                tone =
+                                    if (row ==
+                                        state.rows.last()
+                                    ) {
+                                        QeetrixSeparatorTone.Default
+                                    } else {
+                                        QeetrixSeparatorTone.Subtle
+                                    },
+                            )
                         }
                     }
                 }
@@ -381,7 +405,13 @@ private fun ApprovalsRow(
     QeetrixListItem(
         title = stringResource(R.string.approvals_row_title),
         description =
-            if (link != null) stringResource(R.string.approvals_row_linked, link.deviceName) else stringResource(R.string.approvals_row_not_linked),
+            if (link !=
+                null
+            ) {
+                stringResource(R.string.approvals_row_linked, link.deviceName)
+            } else {
+                stringResource(R.string.approvals_row_not_linked)
+            },
         onClick = onClick,
         leading = { QeetrixListItemIcon(QeetrixIconName.CircleCheck) },
         trailing = {
@@ -462,7 +492,11 @@ private fun EmptyAccounts(
                 } else {
                     {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            QeetrixText(stringResource(R.string.accounts_using_qeet_id), size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
+                            QeetrixText(
+                                stringResource(R.string.accounts_using_qeet_id),
+                                size = QeetrixTextSize.Sm,
+                                tone = QeetrixTextTone.Subtle,
+                            )
                             QeetrixButton(
                                 stringResource(R.string.accounts_link_phone),
                                 onClick = onLink,

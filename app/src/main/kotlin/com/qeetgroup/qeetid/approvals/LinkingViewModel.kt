@@ -88,10 +88,22 @@ class LinkingViewModel(
                         )
                         LinkingState(linked = true)
                     }
-                    ClaimResult.InvalidCode -> LinkingState(codeError = true, problem = LinkProblem.InvalidCode)
-                    is ClaimResult.Throttled -> LinkingState(problem = LinkProblem.Throttled(result.retryAfterSeconds))
-                    ClaimResult.Network -> LinkingState(problem = LinkProblem.Network)
-                    is ClaimResult.Refused -> LinkingState(problem = LinkProblem.Refused)
+
+                    ClaimResult.InvalidCode -> {
+                        LinkingState(codeError = true, problem = LinkProblem.InvalidCode)
+                    }
+
+                    is ClaimResult.Throttled -> {
+                        LinkingState(problem = LinkProblem.Throttled(result.retryAfterSeconds))
+                    }
+
+                    ClaimResult.Network -> {
+                        LinkingState(problem = LinkProblem.Network)
+                    }
+
+                    is ClaimResult.Refused -> {
+                        LinkingState(problem = LinkProblem.Refused)
+                    }
                 }
         }
     }

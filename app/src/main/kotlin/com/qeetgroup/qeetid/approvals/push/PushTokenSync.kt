@@ -45,7 +45,10 @@ class PushTokenSync(
             if (link.pushTokenHash == hash) return@withLock null
             val result = api.updatePushToken(link.deviceId, link.userId, link.deviceToken, token)
             when (result) {
-                PushTokenResult.Updated -> links.update { it.copy(pushTokenHash = hash) }
+                PushTokenResult.Updated -> {
+                    links.update { it.copy(pushTokenHash = hash) }
+                }
+
                 // The server no longer accepts this phone's credential: it was removed from the account, so the link
                 // approves nothing. Forget it here too.
                 PushTokenResult.Unauthorized -> {
@@ -53,7 +56,8 @@ class PushTokenSync(
                     tokens.stop()
                     onUnlinkedByServer()
                 }
-                else -> Unit
+
+                else -> {}
             }
             result
         }

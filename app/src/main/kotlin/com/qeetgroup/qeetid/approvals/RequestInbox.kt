@@ -67,12 +67,14 @@ class RequestInbox(
                                 .firstOrNull { explicit || synchronized(seen) { it.id !in seen } }
                         newest?.let { _next.value = SignInRequestRoute(it.id) }
                     }
+
                     PendingResult.Unauthorized -> {
                         // The server no longer accepts this phone's credential: it approves nothing, so forget it.
                         links.clear()
                         onUnlinkedByServer()
                     }
-                    PendingResult.NotSupported, PendingResult.Network -> Unit
+
+                    PendingResult.NotSupported, PendingResult.Network -> {}
                 }
             }.also { checking = it }
     }

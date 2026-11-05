@@ -86,21 +86,33 @@ fun SettingsRoute(navController: NavHostController) {
     LaunchedEffect(model) {
         model.unlinkOutcomes.collect { outcome ->
             when (outcome) {
-                UnlinkOutcome.Unlinked -> snackbars.show(resources.getString(R.string.unlinked), QeetrixSnackbarTone.Success)
-                UnlinkOutcome.AlreadyRemoved ->
-                    snackbars.show(resources.getString(R.string.unlinked), QeetrixSnackbarTone.Success, resources.getString(R.string.unlinked_already))
-                UnlinkOutcome.FailedNetwork ->
+                UnlinkOutcome.Unlinked -> {
+                    snackbars.show(resources.getString(R.string.unlinked), QeetrixSnackbarTone.Success)
+                }
+
+                UnlinkOutcome.AlreadyRemoved -> {
+                    snackbars.show(
+                        resources.getString(R.string.unlinked),
+                        QeetrixSnackbarTone.Success,
+                        resources.getString(R.string.unlinked_already),
+                    )
+                }
+
+                UnlinkOutcome.FailedNetwork -> {
                     snackbars.show(
                         resources.getString(R.string.unlink_failed_title),
                         QeetrixSnackbarTone.Danger,
                         resources.getString(R.string.unlink_failed_network),
                     )
-                UnlinkOutcome.FailedRefused ->
+                }
+
+                UnlinkOutcome.FailedRefused -> {
                     snackbars.show(
                         resources.getString(R.string.unlink_failed_title),
                         QeetrixSnackbarTone.Danger,
                         resources.getString(R.string.unlink_failed_refused),
                     )
+                }
             }
         }
     }
@@ -166,7 +178,10 @@ fun SettingsRoute(navController: NavHostController) {
                 ) {
                     if (current != null) {
                         QeetrixDescriptionList {
-                            QeetrixDescriptionItem(stringResource(R.string.settings_account), current.accountEmail ?: stringResource(R.string.account_fallback))
+                            QeetrixDescriptionItem(
+                                stringResource(R.string.settings_account),
+                                current.accountEmail ?: stringResource(R.string.account_fallback),
+                            )
                             QeetrixDescriptionItem(
                                 stringResource(R.string.settings_this_phone),
                                 stringResource(
@@ -187,7 +202,10 @@ fun SettingsRoute(navController: NavHostController) {
                             checked = appLock && secure,
                             onCheckedChange = ::changeLock,
                             label = stringResource(R.string.settings_app_lock),
-                            description = stringResource(if (secure) R.string.settings_app_lock_description else R.string.lock_needs_screen_lock),
+                            description =
+                                stringResource(
+                                    if (secure) R.string.settings_app_lock_description else R.string.lock_needs_screen_lock,
+                                ),
                             enabled = secure,
                         )
                         QeetrixSwitch(
@@ -205,8 +223,16 @@ fun SettingsRoute(navController: NavHostController) {
                         onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, HELP_PAGE.toUri())) },
                         leading = { QeetrixListItemIcon(QeetrixIconName.Info) },
                         trailing = {
-                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm)) {
-                                QeetrixText(BuildConfig.VERSION_NAME, size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtlest, mono = true)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm),
+                            ) {
+                                QeetrixText(
+                                    BuildConfig.VERSION_NAME,
+                                    size = QeetrixTextSize.Sm,
+                                    tone = QeetrixTextTone.Subtlest,
+                                    mono = true,
+                                )
                                 QeetrixIcon(
                                     QeetrixIconName.ChevronRight,
                                     contentDescription = null,

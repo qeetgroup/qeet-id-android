@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -128,6 +129,7 @@ fun RequestScreen(
     }
 
     val review = state as? RequestState.Review
+    val fontScale = LocalDensity.current.fontScale.coerceAtLeast(1f)
     Screen(
         topBar = {
             QeetrixTopAppBar(
@@ -148,7 +150,7 @@ fun RequestScreen(
         },
         bottomBar = {
             when (state) {
-                is RequestState.Review ->
+                is RequestState.Review -> {
                     QeetrixBottomActionBar(scroll = scroll) {
                         QeetrixButton(
                             stringResource(R.string.request_deny),
@@ -180,8 +182,11 @@ fun RequestScreen(
                             fullWidth = true,
                         )
                     }
-                RequestState.Loading -> Unit
-                RequestState.Denied ->
+                }
+
+                RequestState.Loading -> {}
+
+                RequestState.Denied -> {
                     QeetrixBottomActionBar {
                         QeetrixButton(
                             stringResource(R.string.action_done),
@@ -191,7 +196,9 @@ fun RequestScreen(
                             fullWidth = true,
                         )
                     }
-                else ->
+                }
+
+                else -> {
                     QeetrixBottomActionBar {
                         QeetrixButton(
                             stringResource(R.string.action_done),
@@ -201,13 +208,15 @@ fun RequestScreen(
                             fullWidth = true,
                         )
                     }
+                }
             }
         },
     ) {
         Box(Modifier.weight(1f).fillMaxWidth()) {
             when (state) {
-                RequestState.Loading ->
+                RequestState.Loading -> {
                     QeetrixSpinner(Modifier.align(Alignment.Center), label = stringResource(R.string.request_title))
+                }
 
                 is RequestState.Review -> {
                     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
@@ -233,11 +242,16 @@ fun RequestScreen(
                                 enabled = !state.sending,
                                 modifier =
                                     Modifier
-                                        .width(QeetrixTheme.density.sizeControlLg * NUMBER_LENGTH + QeetrixSpace.GapSm)
+                                        // Two square slots, wider as the text grows.
+                                        .width((QeetrixTheme.density.sizeControlLg * NUMBER_LENGTH + QeetrixSpace.GapSm) * fontScale)
                                         .focusRequester(focus)
                                         .testTag("request-number"),
                             )
-                            QeetrixText(stringResource(R.string.request_number_help), size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
+                            QeetrixText(
+                                stringResource(R.string.request_number_help),
+                                size = QeetrixTextSize.Sm,
+                                tone = QeetrixTextTone.Subtle,
+                            )
                         }
                     }
                 }
@@ -256,7 +270,7 @@ fun RequestScreen(
                     )
                 }
 
-                RequestState.Denied ->
+                RequestState.Denied -> {
                     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.Center) {
                         QeetrixEmptyState(
                             stringResource(R.string.request_denied_title),
@@ -279,8 +293,9 @@ fun RequestScreen(
                             },
                         )
                     }
+                }
 
-                is RequestState.Ended ->
+                is RequestState.Ended -> {
                     Outcome(
                         icon = QeetrixIconName.Clock,
                         title = stringResource(R.string.request_ended_title),
@@ -294,37 +309,48 @@ fun RequestScreen(
                             ),
                         footnote = stringResource(R.string.request_ended_footnote),
                     )
+                }
 
-                is RequestState.Answered ->
+                is RequestState.Answered -> {
                     Outcome(
                         icon = QeetrixIconName.Info,
                         title = stringResource(R.string.request_ended_title),
                         body = stringResource(if (state.approved) R.string.request_answered_approved else R.string.request_answered_denied),
                     )
+                }
 
-                RequestState.LoadFailed ->
+                RequestState.LoadFailed -> {
                     Outcome(
                         icon = QeetrixIconName.CircleAlert,
                         title = stringResource(R.string.request_load_error_title),
                         body = stringResource(R.string.request_error_network),
                         action = { QeetrixButton(stringResource(R.string.action_try_again), onClick = model::load) },
                     )
+                }
 
-                RequestState.NotLinked ->
+                RequestState.NotLinked -> {
                     Outcome(
                         icon = QeetrixIconName.Lock,
                         title = stringResource(R.string.request_not_linked_title),
                         body = stringResource(R.string.request_not_linked_body),
                         action = { QeetrixButton(stringResource(R.string.accounts_link_phone), onClick = onLink) },
                     )
+                }
 
-                RequestState.NotThisAccount ->
+                RequestState.NotThisAccount -> {
                     Outcome(
                         icon = QeetrixIconName.CircleAlert,
                         title = stringResource(R.string.request_not_this_account_title),
                         body = stringResource(R.string.request_not_this_account_body),
-                        action = { QeetrixButton(stringResource(R.string.link_go_settings), onClick = onSettings, variant = QeetrixButtonVariant.Ghost) },
+                        action = {
+                            QeetrixButton(
+                                stringResource(R.string.link_go_settings),
+                                onClick = onSettings,
+                                variant = QeetrixButtonVariant.Ghost,
+                            )
+                        },
                     )
+                }
             }
         }
     }
@@ -373,7 +399,9 @@ private fun Details(request: SignInRequest) {
 @Composable
 private fun browserOf(request: SignInRequest): String? {
     val resources = LocalResources.current
-    return BrowserName.describe(request.context.userAgent) { browser, system -> resources.getString(R.string.request_browser_on, browser, system) }
+    return BrowserName.describe(
+        request.context.userAgent,
+    ) { browser, system -> resources.getString(R.string.request_browser_on, browser, system) }
 }
 
 @Composable

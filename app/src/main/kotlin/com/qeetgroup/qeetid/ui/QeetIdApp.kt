@@ -10,8 +10,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.qeetgroup.qeetid.AppContainer
 import androidx.navigation.toRoute
+import com.qeetgroup.qeetid.AppContainer
 import com.qeetgroup.qeetid.approvals.LinkPhoneRoute
 import com.qeetgroup.qeetid.approvals.NamePhoneRoute
 import com.qeetgroup.qeetid.approvals.PhoneLinkedRoute
@@ -87,7 +87,7 @@ private fun AppNavHost(
                 },
             )
         }
-        composable<Accounts> { AccountsRoute(navController) }
+        composable<Accounts> { entry -> AccountsRoute(navController, entry) }
         composable<ScanAccount> { ScanAccountRoute(navController) }
         composable<TypeKey> { TypeKeyRoute(navController) }
         composable<LinkPhone> { LinkPhoneRoute(navController) }

@@ -59,12 +59,16 @@ fun LockedScreen() {
         val result = verification.verify(VerifyPrompt(title, subtitle))
         busy = false
         when (result) {
-            VerifyResult.Verified, VerifyResult.Unavailable -> container.lock.unlock()
+            VerifyResult.Verified, VerifyResult.Unavailable -> {
+                container.lock.unlock()
+            }
+
             VerifyResult.Failed -> {
                 failed = true
                 haptics.perform(QeetrixHapticRole.Error)
             }
-            VerifyResult.Cancelled -> Unit
+
+            VerifyResult.Cancelled -> {}
         }
     }
 

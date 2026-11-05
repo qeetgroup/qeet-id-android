@@ -1,14 +1,16 @@
 package com.qeetgroup.qeetid
 
 import android.app.Application
-import com.qeetgroup.qeetid.approvals.push.SignInNotifications
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.qeetgroup.qeetid.approvals.push.SignInNotifications
 
-class QeetIdApplication : Application() {
-    /** Made on first use, so tests that replace it never build the production one. */
-    val container: AppContainer by lazy { containerOverride ?: AppContainer.create(this) }
+open class QeetIdApplication : Application() {
+    val container: AppContainer by lazy { createContainer() }
+
+    /** The app's objects; tests run a subclass that builds them with fakes. */
+    protected open fun createContainer(): AppContainer = AppContainer.create(this)
 
     override fun onCreate() {
         super.onCreate()
@@ -26,12 +28,6 @@ class QeetIdApplication : Application() {
                 override fun onStop(owner: LifecycleOwner) = container.lock.onBackground()
             },
         )
-    }
-
-    companion object {
-        /** Set by tests before the application is created. */
-        @Volatile
-        var containerOverride: AppContainer? = null
     }
 }
 

@@ -104,12 +104,21 @@ private fun cameraState(
     asked: Boolean,
 ): QeetrixScannerState =
     when {
-        !context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) -> QeetrixScannerState.NoCamera
-        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED ->
+        !context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) -> {
+            QeetrixScannerState.NoCamera
+        }
+
+        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
             QeetrixScannerState.Scanning
-        asked && activity != null && !activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ->
+        }
+
+        asked && activity != null && !activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
             QeetrixScannerState.PermissionDenied
-        else -> QeetrixScannerState.PermissionNeeded
+        }
+
+        else -> {
+            QeetrixScannerState.PermissionNeeded
+        }
     }
 
 @Composable

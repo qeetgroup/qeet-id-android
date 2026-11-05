@@ -181,11 +181,13 @@ fun LockSetupScreen(
                                         container.lock.unlock()
                                         onDone()
                                     }
+
                                     VerifyResult.Unavailable -> {
                                         container.preferences.setAppLock(false)
                                         onDone()
                                     }
-                                    VerifyResult.Cancelled, VerifyResult.Failed -> Unit
+
+                                    VerifyResult.Cancelled, VerifyResult.Failed -> {}
                                 }
                             }
                         },

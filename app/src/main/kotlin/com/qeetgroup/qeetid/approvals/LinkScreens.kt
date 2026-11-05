@@ -85,19 +85,23 @@ private fun LinkNotices(
         )
     }
     when (availability) {
-        PushAvailability.Unavailable ->
+        PushAvailability.Unavailable -> {
             QeetrixAlert(
                 title = stringResource(R.string.link_unavailable_title),
                 description = stringResource(R.string.link_unavailable_body),
                 tone = QeetrixAlertTone.Warning,
             )
-        PushAvailability.DebugStandIn ->
+        }
+
+        PushAvailability.DebugStandIn -> {
             QeetrixAlert(
                 title = stringResource(R.string.link_stand_in_title),
                 description = stringResource(R.string.link_stand_in_body),
                 tone = QeetrixAlertTone.Info,
             )
-        PushAvailability.Firebase -> Unit
+        }
+
+        PushAvailability.Firebase -> {}
     }
 }
 
@@ -205,7 +209,10 @@ fun ScanPairingRoute(navController: NavHostController) {
             description = stringResource(R.string.scan_pairing_not_code_body),
             actions =
                 listOf(
-                    QeetrixDialogAction(stringResource(R.string.action_cancel), QeetrixDialogActionRole.Cancel) { navController.popBackStack() },
+                    QeetrixDialogAction(
+                        stringResource(R.string.action_cancel),
+                        QeetrixDialogActionRole.Cancel,
+                    ) { navController.popBackStack() },
                     QeetrixDialogAction(stringResource(R.string.action_try_again)) { refused = false },
                 ),
         )
@@ -369,11 +376,17 @@ fun PhoneLinkedRoute(navController: NavHostController) {
             link?.let { summary ->
                 QeetrixCard(Modifier.fillMaxWidth(), title = stringResource(R.string.linked_card)) {
                     QeetrixDescriptionList {
-                        QeetrixDescriptionItem(stringResource(R.string.linked_account), summary.accountEmail ?: stringResource(R.string.account_fallback))
+                        QeetrixDescriptionItem(
+                            stringResource(R.string.linked_account),
+                            summary.accountEmail ?: stringResource(R.string.account_fallback),
+                        )
                         QeetrixDescriptionItem(stringResource(R.string.linked_name), summary.deviceName)
                         QeetrixDescriptionItem(
                             stringResource(R.string.linked_until),
-                            stringResource(R.string.linked_until_value, QeetrixFormat.date(Instant.ofEpochMilli(summary.linkedUntilMillis))),
+                            stringResource(
+                                R.string.linked_until_value,
+                                QeetrixFormat.date(Instant.ofEpochMilli(summary.linkedUntilMillis)),
+                            ),
                         )
                     }
                 }

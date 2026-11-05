@@ -28,10 +28,8 @@ class CodeClipboard(
         label: String,
     ) {
         val clip = ClipData.newPlainText(label, code)
-        clip.description.extras =
-            PersistableBundle().apply {
-                putBoolean(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) ClipDescription.EXTRA_IS_SENSITIVE else SENSITIVE, true)
-            }
+        val sensitive = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) ClipDescription.EXTRA_IS_SENSITIVE else SENSITIVE
+        clip.description.extras = PersistableBundle().apply { putBoolean(sensitive, true) }
         manager()?.setPrimaryClip(clip)
         clearLater(code)
     }

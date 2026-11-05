@@ -1,6 +1,7 @@
 package com.qeetgroup.qeetid.system
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
@@ -25,6 +26,8 @@ object NotificationAccess {
     /** Android 13 and later ask at run time. */
     val needsPermission: Boolean get() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
+    // Asked for only on Android 13 and later (needsPermission), where the permission exists.
+    @SuppressLint("InlinedApi")
     const val PERMISSION = Manifest.permission.POST_NOTIFICATIONS
 
     fun permissionGranted(context: Context): Boolean =
@@ -34,8 +37,7 @@ object NotificationAccess {
     fun refusedForGood(
         activity: Activity?,
         asked: Boolean,
-    ): Boolean =
-        activity != null && asked && !permissionGranted(activity) && !activity.shouldShowRequestPermissionRationale(PERMISSION)
+    ): Boolean = activity != null && asked && !permissionGranted(activity) && !activity.shouldShowRequestPermissionRationale(PERMISSION)
 
     /** The app's notification settings. */
     fun settingsIntent(context: Context): Intent =

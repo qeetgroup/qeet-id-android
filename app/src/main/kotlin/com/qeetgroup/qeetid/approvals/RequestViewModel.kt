@@ -94,8 +94,14 @@ class RequestViewModel(
             }
             _state.value =
                 when (val result = container.api.signInRequest(id)) {
-                    FetchResult.Network -> RequestState.LoadFailed
-                    FetchResult.NotFound -> RequestState.Ended(EndReason.Gone)
+                    FetchResult.Network -> {
+                        RequestState.LoadFailed
+                    }
+
+                    FetchResult.NotFound -> {
+                        RequestState.Ended(EndReason.Gone)
+                    }
+
                     is FetchResult.Found -> {
                         val request = result.request
                         expiresAtLocal = result.expiresAtLocalMillis
@@ -137,16 +143,34 @@ class RequestViewModel(
             val result = container.api.respond(id, link.userId, link.deviceToken, approved, number)
             _state.value =
                 when (result) {
-                    RespondResult.Done -> if (approved) RequestState.Approved(review.request) else RequestState.Denied
-                    RespondResult.NumberMismatch -> RequestState.Ended(EndReason.NumberMismatch)
-                    RespondResult.Expired -> RequestState.Ended(EndReason.Expired)
-                    RespondResult.NotThisAccount -> RequestState.NotThisAccount
+                    RespondResult.Done -> {
+                        if (approved) RequestState.Approved(review.request) else RequestState.Denied
+                    }
+
+                    RespondResult.NumberMismatch -> {
+                        RequestState.Ended(EndReason.NumberMismatch)
+                    }
+
+                    RespondResult.Expired -> {
+                        RequestState.Ended(EndReason.Expired)
+                    }
+
+                    RespondResult.NotThisAccount -> {
+                        RequestState.NotThisAccount
+                    }
+
                     RespondResult.AlreadyAnswered -> {
                         load()
                         return@launch
                     }
-                    RespondResult.Network -> review.copy(sending = false, error = com.qeetgroup.qeetid.R.string.request_error_network)
-                    is RespondResult.Refused -> review.copy(sending = false, error = com.qeetgroup.qeetid.R.string.request_error_refused)
+
+                    RespondResult.Network -> {
+                        review.copy(sending = false, error = com.qeetgroup.qeetid.R.string.request_error_network)
+                    }
+
+                    is RespondResult.Refused -> {
+                        review.copy(sending = false, error = com.qeetgroup.qeetid.R.string.request_error_refused)
+                    }
                 }
             if (_state.value !is RequestState.Review) countdown?.cancel()
         }
