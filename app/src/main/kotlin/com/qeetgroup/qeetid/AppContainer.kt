@@ -2,6 +2,7 @@ package com.qeetgroup.qeetid
 
 import android.content.Context
 import com.qeetgroup.qeetid.approvals.PhoneLinkStore
+import com.qeetgroup.qeetid.approvals.RequestInbox
 import com.qeetgroup.qeetid.approvals.push.DebugStandInPushTokens
 import com.qeetgroup.qeetid.approvals.push.FirebasePushTokens
 import com.qeetgroup.qeetid.approvals.push.NoPushTokens
@@ -53,6 +54,8 @@ class AppContainer(
         )
 
     val pushSync = PushTokenSync(links, api, pushTokens, scope)
+
+    val inbox = RequestInbox(links, api, scope, onUnlinkedByServer = pushTokens::stop)
 
     companion object {
         fun create(context: Context): AppContainer {

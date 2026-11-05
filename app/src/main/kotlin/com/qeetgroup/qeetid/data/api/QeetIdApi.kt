@@ -95,6 +95,22 @@ sealed interface UnlinkResult {
     ) : UnlinkResult
 }
 
+/** Asking the server for sign-in requests waiting for this phone. */
+sealed interface PendingResult {
+    /** Pending, unexpired requests, newest first (possibly none). */
+    data class Found(
+        val requests: List<SignInRequest>,
+    ) : PendingResult
+
+    /** The server has no such route yet (an older server). */
+    data object NotSupported : PendingResult
+
+    /** The credential is no longer accepted: the phone was removed from the account, or its link expired. */
+    data object Unauthorized : PendingResult
+
+    data object Network : PendingResult
+}
+
 /** Sending the server this phone's new push token. */
 sealed interface PushTokenResult {
     data object Updated : PushTokenResult
@@ -227,6 +243,34 @@ class QeetIdApi(
             }
         } catch (_: IOException) {
             UnlinkResult.Network
+        }
+    }
+
+    /**
+     * The sign-in requests waiting for this phone (`POST /v1/mfa/push/devices/{id}/pending`), asked for when the app
+     * comes to the foreground: the way a request reaches a phone whose push message was lost, or that has no push.
+     */
+    suspend fun pendingRequests(
+        deviceId: String,
+        userId: String,
+        deviceToken: String,
+    ): PendingResult {
+        val body = encode(CredentialBody.serializer(), CredentialBody(userId, deviceToken))
+        return try {
+            post(url("mfa", "push", "devices", deviceId, "pending"), body).use { res ->
+                if (res.isSuccessful) {
+                    val pending = decode(PendingResponse.serializer(), res) ?: return PendingResult.Network
+                    return PendingResult.Found(pending.challenges)
+                }
+                val error = error(res)
+                when {
+                    (res.code == 404 || res.code == 405) && error?.code == null -> PendingResult.NotSupported
+                    res.code == 401 -> PendingResult.Unauthorized
+                    else -> PendingResult.Network
+                }
+            }
+        } catch (_: IOException) {
+            PendingResult.Network
         }
     }
 

@@ -58,6 +58,11 @@ internal data class PushTokenRequest(
 )
 
 @Serializable
+internal data class PendingResponse(
+    val challenges: List<SignInRequest> = emptyList(),
+)
+
+@Serializable
 internal data class ErrorEnvelope(
     val error: ErrorBody? = null,
 )
@@ -73,7 +78,8 @@ internal data class ErrorBody(
 @Serializable
 data class SignInRequest(
     val id: String,
-    @SerialName("user_id") val userId: String,
+    /** Present on `GET /challenges/{id}`; the pending list leaves it out (they are all this phone's account's). */
+    @SerialName("user_id") val userId: String = "",
     val action: String,
     val status: String,
     @SerialName("expires_at") val expiresAt: String,

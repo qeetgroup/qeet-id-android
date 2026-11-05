@@ -35,6 +35,18 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!--
+              The QR code Qeet ID shows under Link a phone holds qeetidauth://pair?code=…, so the phone's own camera
+              opens the app on it. The app always asks before linking.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="pair"
+                    android:scheme="qeetidauth" />
+            </intent-filter>
         </activity>
     </application>
 

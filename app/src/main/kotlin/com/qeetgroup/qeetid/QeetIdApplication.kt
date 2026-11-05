@@ -13,7 +13,11 @@ class QeetIdApplication : Application() {
         super.onCreate()
         ProcessLifecycleOwner.get().lifecycle.addObserver(
             object : DefaultLifecycleObserver {
-                override fun onStart(owner: LifecycleOwner) = container.lock.onForeground()
+                override fun onStart(owner: LifecycleOwner) {
+                    container.lock.onForeground()
+                    // A request whose push was lost, or that no push could carry, is opened when the app comes back.
+                    container.inbox.checkPending()
+                }
 
                 override fun onStop(owner: LifecycleOwner) = container.lock.onBackground()
             },
