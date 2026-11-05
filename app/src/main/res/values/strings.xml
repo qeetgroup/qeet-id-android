@@ -1,4 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Qeet ID</string>
+
+    <!-- Shared actions -->
+    <string name="action_continue">Continue</string>
+    <string name="action_not_now">Not now</string>
+    <string name="action_done">Done</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_try_again">Try again</string>
+    <string name="action_close">Close</string>
+    <string name="action_open_settings">Open Settings</string>
+    <string name="device_name_fallback">Android phone</string>
+
+    <!-- Getting started -->
+    <string name="welcome_title">Sign in safely, with this phone</string>
+    <string name="welcome_body">Your sign-in codes, and a quick way to confirm it’s you when you sign in to Qeet ID.</string>
+    <string name="welcome_codes_title">Sign-in codes</string>
+    <string name="welcome_codes_body">For Qeet ID and any site with 2-step verification. They work offline.</string>
+    <string name="welcome_approvals_title">Approve sign-ins</string>
+    <string name="welcome_approvals_body">Confirm it\'s you when you sign in to Qeet ID on a computer.</string>
+    <string name="welcome_kept_title">Kept on this phone</string>
+    <string name="welcome_kept_body">Secrets stay in the phone\'s secure hardware. Qeet ID never receives them.</string>
+    <string name="welcome_get_started">Get started</string>
+    <string name="onboarding_step">Step %1$d of %2$d</string>
+    <string name="lock_setup_title">Lock Qeet ID</string>
+    <string name="lock_setup_body">Ask for your fingerprint, face or screen lock each time the app opens. Someone holding your unlocked phone still can\'t read your codes.</string>
+    <string name="lock_switch_label">App lock</string>
+    <string name="lock_switch_description">Fingerprint, face or PIN</string>
+    <string name="lock_needs_screen_lock">Set a screen lock on this phone first: a PIN, pattern or password</string>
+    <string name="lock_setup_approvals_note">Approving a Qeet ID sign-in always asks for your fingerprint or PIN.</string>
+    <string name="notifications_title">Get sign-in requests on this phone</string>
+    <string name="notifications_body">Qeet ID asks you to approve each sign-in to your account. Allow notifications so the requests reach you.</string>
+    <string name="notifications_denied">Turn on notifications for Qeet ID in Settings so sign-in requests reach you.</string>
+    <string name="notifications_footnote">Only sign-in requests. Nothing else, no marketing.</string>
+
+    <!-- App lock -->
+    <string name="lock_prompt_title">Unlock Qeet ID</string>
+    <string name="lock_prompt_subtitle">Confirm it\'s you to see your codes</string>
+    <string name="lock_on_prompt_title">Turn on app lock</string>
+    <string name="lock_off_prompt_title">Turn off app lock</string>
+    <string name="lock_change_prompt_subtitle">Confirm it\'s you to change how Qeet ID opens</string>
+    <string name="locked_title">Qeet ID is locked</string>
+    <string name="locked_body">Unlock to see your codes and sign-in requests.</string>
+    <string name="locked_unlock">Unlock</string>
+    <string name="locked_failed">Couldn\'t confirm it\'s you. Try again.</string>
+    <string name="app_mark_description">Qeet ID</string>
+
+    <!-- Accounts -->
+    <string name="accounts_title">Accounts</string>
+    <plurals name="accounts_count">
+        <item quantity="one">%d on this phone</item>
+        <item quantity="other">%d on this phone</item>
+    </plurals>
+    <string name="accounts_none">None yet</string>
+    <string name="accounts_add">Add account</string>
+    <string name="accounts_settings">Settings</string>
+    <string name="accounts_search">Search accounts</string>
+    <string name="accounts_codes">Codes</string>
+    <string name="approvals_row_title">Sign-in approvals</string>
+    <string name="approvals_row_linked">Linked · %1$s</string>
+    <string name="approvals_row_not_linked">Not set up · Link this phone</string>
+    <string name="badge_on">On</string>
+    <string name="badge_off">Off</string>
+    <string name="accounts_empty_title">No accounts yet</string>
+    <string name="accounts_empty_body">Turn on 2-step verification on a website or app. It shows a QR code; scan it here.</string>
+    <string name="accounts_scan_qr">Scan QR code</string>
+    <string name="accounts_type_key">Type the key</string>
+    <string name="accounts_using_qeet_id">Using Qeet ID?</string>
+    <string name="accounts_link_phone">Link this phone</string>
+    <string name="accounts_no_match_title">No accounts match</string>
+    <string name="accounts_no_match_body">Search by the service or the account name.</string>
+    <string name="account_unnamed">Unnamed account</string>
+    <string name="account_actions">Show actions</string>
+    <string name="copied">Copied</string>
+    <string name="copied_clears">Clears in 30 s</string>
+    <string name="account_added">%1$s added</string>
+    <string name="account_deleted">%1$s deleted</string>
+    <string name="alert_notifications_off_title">Sign-in requests are off</string>
+    <string name="alert_notifications_off_body">Notifications are turned off for Qeet ID, so requests won\'t reach this phone.</string>
+    <string name="alert_notifications_off_action">Allow notifications</string>
+    <string name="alert_offline_title">You\'re offline</string>
+    <string name="alert_offline_body">Codes still work. Approvals wait until you\'re back.</string>
+    <string name="alert_vault_reset_title">Saved accounts couldn\'t be opened</string>
+    <string name="alert_vault_reset_body">This phone\'s secure storage was reset, so they can\'t be read any more. Set them up again from each site.</string>
+
+    <!-- Account actions -->
+    <string name="action_copy_code">Copy code</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_delete_account">Delete account</string>
+    <string name="delete_title">Delete %1$s?</string>
+    <string name="delete_body">You\'ll stop getting codes for %1$s. Turn off 2-step verification on %2$s first, or you may be locked out.</string>
+    <string name="rename_title">Rename account</string>
+    <string name="rename_body">Only changes how it\'s shown on this phone.</string>
+    <string name="rename_service">Service</string>
+    <string name="rename_account">Account</string>
+    <string name="rename_service_required">Enter a name for the service.</string>
+
+    <!-- Add account -->
+    <string name="scan_account_title">Add account</string>
+    <string name="scan_account_guidance">Point the camera at the QR code</string>
+    <string name="scan_not_code_title">Not a sign-in code</string>
+    <string name="scan_not_code_body">This QR code isn\'t for 2-step verification. Scan the code on the site\'s 2-step setup page.</string>
+    <string name="scan_counter_title">This kind of code isn\'t supported</string>
+    <string name="scan_counter_body">It\'s a counter-based (HOTP) code. Qeet ID shows time-based codes, which most sites use: choose the authenticator app option on the site.</string>
+    <string name="type_key_title">Type the setup key</string>
+    <string name="type_key_service">Service</string>
+    <string name="type_key_service_placeholder">e.g. Razorpay</string>
+    <string name="type_key_account">Account</string>
+    <string name="type_key_account_placeholder">e.g. priya@acme.in</string>
+    <string name="type_key_key">Setup key</string>
+    <string name="type_key_key_placeholder">e.g. JBSW Y3DP EHPK 3PXP</string>
+    <string name="type_key_key_help">From the site\'s setup page. Spaces don\'t matter.</string>
+    <string name="type_key_advanced">Advanced</string>
+    <string name="type_key_summary">%1$d digits · every %2$d seconds · %3$s</string>
+    <string name="type_key_digits">Digits</string>
+    <string name="type_key_period">New code every</string>
+    <string name="type_key_algorithm">Algorithm</string>
+    <string name="period_30">30 seconds</string>
+    <string name="period_60">60 seconds</string>
+    <string name="type_key_add">Add account</string>
+    <string name="type_key_service_required">Enter the service\'s name, as you\'d like to see it.</string>
+    <string name="type_key_key_required">Enter the setup key from the site.</string>
+    <string name="type_key_key_invalid">A setup key has only the letters A to Z and the digits 2 to 7. Check what you typed.</string>
+    <string name="type_key_key_short">This key is too short. Check that you typed all of it.</string>
+
+    <!-- Linking -->
+    <string name="link_title">Link this phone</string>
+    <string name="link_intro">Approve Qeet ID sign-ins here instead of typing a code. You need Qeet ID open on a computer.</string>
+    <string name="link_step1_title">Open Qeet ID on your computer</string>
+    <string name="link_step1_body">Go to Account, then Security</string>
+    <string name="link_step2_title">Choose Link a phone</string>
+    <string name="link_step2_body">Under Two-step verification</string>
+    <string name="link_step3_title">Scan the code it shows</string>
+    <string name="link_step3_body">It works once, for a few minutes</string>
+    <string name="link_scan">Scan the code</string>
+    <string name="link_type">Type the code instead</string>
+    <string name="link_already_title">This phone is already linked</string>
+    <string name="link_already_body">Unlink it in Settings first to link it to another Qeet ID account.</string>
+    <string name="link_go_settings">Go to Settings</string>
+    <string name="link_unavailable_title">This build can\'t get sign-in requests</string>
+    <string name="link_unavailable_body">It was built without Firebase, so it can\'t be linked. Install Qeet ID from Google Play.</string>
+    <string name="link_stand_in_title">Debug build without Firebase</string>
+    <string name="link_stand_in_body">This phone links with a stand-in push token. Sign-in requests reach it only through the debug entry point.</string>
+    <string name="scan_pairing_guidance">Point the camera at the code in Qeet ID</string>
+    <string name="scan_pairing_not_code_title">Not a pairing code</string>
+    <string name="scan_pairing_not_code_body">This isn\'t a Qeet ID pairing code. In Qeet ID on your computer, open Account, then Security, choose Link a phone and scan the code it shows.</string>
+    <string name="pairing_code_label">Pairing code</string>
+    <string name="pairing_code_placeholder">e.g. KM7QX-4TRWP</string>
+    <string name="pairing_code_help">Shown in Qeet ID under Link a phone.</string>
+    <string name="pairing_code_invalid">A pairing code has 10 letters and digits, like KM7QX-4TRWP.</string>
+    <string name="phone_name_label">Name for this phone</string>
+    <string name="phone_name_help">Shown in Qeet ID, in the list of your phones.</string>
+    <string name="phone_name_required">Enter a name, so you can tell your phones apart.</string>
+    <string name="link_requests_term">Sign-in requests</string>
+    <string name="link_requests_value">Come to this phone</string>
+    <string name="link_stays_term">Stays linked</string>
+    <string name="link_stays_value">180 days after you last link it</string>
+    <string name="link_phone">Link phone</string>
+    <string name="link_error_title">Couldn\'t link this phone</string>
+    <string name="link_error_invalid">That code is wrong, already used or expired. Get a new one in Qeet ID and try again.</string>
+    <plurals name="link_error_throttled">
+        <item quantity="one">Too many tries from this network. Wait %d second, then try again.</item>
+        <item quantity="other">Too many tries from this network. Wait %d seconds, then try again.</item>
+    </plurals>
+    <string name="link_error_network">Couldn\'t reach Qeet ID. Check your connection and try again.</string>
+    <string name="link_error_refused">Qeet ID didn\'t link this phone. Try again.</string>
+    <string name="link_error_no_push">This phone couldn\'t get a push token for sign-in requests. Check that you\'re online and Google Play services is up to date, then try again.</string>
+    <string name="linked_title">Phone linked</string>
+    <string name="linked_body">Sign-in requests for your account now come here.</string>
+    <string name="linked_card">This phone</string>
+    <string name="linked_account">Account</string>
+    <string name="linked_name">Name</string>
+    <string name="linked_until">Linked until</string>
+    <string name="linked_until_value">%1$s · link again to extend</string>
+    <string name="account_fallback">Your Qeet ID account</string>
+
+    <!-- Sign-in requests -->
+    <string name="notification_channel_name">Sign-in requests</string>
+    <string name="notification_channel_description">Requests to approve a sign-in to your Qeet ID account.</string>
+    <string name="notification_title">Sign-in request</string>
+    <string name="notification_body">Someone is signing in to your Qeet ID account. Tap to review.</string>
+    <string name="request_title">Sign-in request</string>
+    <string name="request_time_left">%1$s left</string>
+    <string name="request_question_sign_in">Are you signing in to Qeet ID?</string>
+    <string name="request_question_step_up">Are you confirming it\'s you in Qeet ID?</string>
+    <string name="request_question_other">Is this you, in Qeet ID?</string>
+    <string name="request_browser">Browser</string>
+    <string name="request_time">Time</string>
+    <string name="request_near">Near</string>
+    <string name="request_ip">IP address</string>
+    <string name="request_number_label">Number on your sign-in screen</string>
+    <string name="request_number_help">Didn\'t start a sign-in? Choose Deny.</string>
+    <string name="request_deny">Deny</string>
+    <string name="request_approve">Approve</string>
+    <string name="request_verify_title">Approve sign-in</string>
+    <string name="request_verify_subtitle">Confirm it\'s you to approve this sign-in to Qeet ID</string>
+    <string name="request_verify_failed">Couldn\'t confirm it\'s you, so nothing was sent. Try again.</string>
+    <string name="request_no_screen_lock">Set a screen lock on this phone to approve sign-ins: approving always asks for your fingerprint or PIN.</string>
+    <string name="request_error_network">Couldn\'t reach Qeet ID. Check your connection and try again.</string>
+    <string name="request_error_refused">Qeet ID didn\'t accept the answer. Try again.</string>
+    <string name="request_approved_title">Sign-in approved</string>
+    <string name="request_approved_body">Go back to your computer. %1$s is signing in to Qeet ID.</string>
+    <string name="request_approved_body_generic">Go back to your computer to finish signing in to Qeet ID.</string>
+    <string name="request_denied_title">Sign-in blocked</string>
+    <string name="request_denied_body">Nobody got in. But whoever tried has your password.</string>
+    <string name="request_denied_alert_title">Change your Qeet ID password</string>
+    <string name="request_denied_alert_body">Use one you don\'t use anywhere else.</string>
+    <string name="request_denied_alert_action">Open security</string>
+    <string name="request_ended_title">This request has ended</string>
+    <string name="request_ended_mismatch">The number didn\'t match, so the sign-in was refused. Nothing was approved.</string>
+    <string name="request_ended_expired">It wasn\'t answered within two minutes, so it expired. Nothing was approved.</string>
+    <string name="request_ended_gone">It expired, or it was answered already. Nothing more to do here.</string>
+    <string name="request_ended_footnote">Was it you? Start signing in again on your computer; a new request will come here.</string>
+    <string name="request_answered_approved">This request was already approved.</string>
+    <string name="request_answered_denied">This request was already denied.</string>
+    <string name="request_load_error_title">Couldn\'t load the request</string>
+    <string name="request_not_linked_title">This phone isn\'t linked</string>
+    <string name="request_not_linked_body">Link it to your Qeet ID account to approve sign-ins here.</string>
+    <string name="request_not_this_account_title">This phone can\'t answer this request</string>
+    <string name="request_not_this_account_body">It isn\'t linked to the account that sent it, or it was removed from the account. Link it again to approve sign-ins here.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_approvals">Sign-in approvals</string>
+    <string name="settings_account">Account</string>
+    <string name="settings_this_phone">This phone</string>
+    <string name="settings_this_phone_value">%1$s · linked until %2$s</string>
+    <string name="settings_unlink">Unlink this phone</string>
+    <string name="settings_not_linked_body">Approve Qeet ID sign-ins on this phone instead of typing a code.</string>
+    <string name="settings_link">Link this phone</string>
+    <string name="settings_security">Security</string>
+    <string name="settings_app_lock">App lock</string>
+    <string name="settings_app_lock_description">Fingerprint, face or PIN to open</string>
+    <string name="settings_hide_codes">Hide codes until tapped</string>
+    <string name="settings_hide_codes_description">For screens others can see</string>
+    <string name="settings_help">Help and privacy</string>
+    <string name="unlink_title">Unlink this phone?</string>
+    <string name="unlink_body">Sign-in requests for %1$s will stop coming here. Your sign-in codes stay on this phone.</string>
+    <string name="unlink_body_generic">Sign-in requests for your Qeet ID account will stop coming here. Your sign-in codes stay on this phone.</string>
+    <string name="unlink_confirm">Unlink</string>
+    <string name="unlinked">Phone unlinked</string>
+    <string name="unlinked_already">It had already been removed from your account, and is now cleared here too.</string>
+    <string name="unlink_failed_title">Couldn\'t unlink this phone</string>
+    <string name="unlink_failed_network">Couldn\'t reach Qeet ID. This phone is still linked; try again.</string>
+    <string name="unlink_failed_refused">Qeet ID didn\'t unlink it. This phone is still linked; try again.</string>
+
+    <!-- Qeetrix's camera texts, named for this app. -->
+    <string name="qx_scanner_permission_denied">Turn on the camera for Qeet ID in Settings to scan the code.</string>
 </resources>
