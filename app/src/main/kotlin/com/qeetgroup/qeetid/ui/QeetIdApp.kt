@@ -25,6 +25,7 @@ import com.qeetgroup.qeetid.lock.UserVerification
 import com.qeetgroup.qeetid.onboarding.LockSetupScreen
 import com.qeetgroup.qeetid.onboarding.NotificationsPrimerScreen
 import com.qeetgroup.qeetid.onboarding.WelcomeScreen
+import com.qeetgroup.qeetid.settings.SettingsRoute
 import com.qeetgroup.qeetrix.theme.QeetrixTheme
 
 /**
@@ -94,5 +95,6 @@ private fun AppNavHost(
         composable<NamePhone> { entry -> NamePhoneRoute(navController, entry.toRoute<NamePhone>().code) }
         composable<PhoneLinked> { PhoneLinkedRoute(navController) }
         composable<SignInRequestRoute> { entry -> SignInRequestScreenRoute(navController, entry.toRoute<SignInRequestRoute>().id) }
+        composable<Settings> { SettingsRoute(navController) }
     }
 }
