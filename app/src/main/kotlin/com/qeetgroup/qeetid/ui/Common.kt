@@ -103,8 +103,9 @@ fun initialOf(name: String): String =
         ?.uppercase() ?: "?"
 
 /**
- * An action row in a bottom sheet: a 20 dp icon and the label in `body.md`, red when destructive. Qeetrix's menu
- * items need a QeetrixMenu, so a sheet's actions are drawn here (logged as a Qeetrix finding).
+ * An action row in a bottom sheet (whose body supplies the side padding): a 20 dp icon and the label in `body.md`, red
+ * when destructive. Qeetrix's menu items need a QeetrixMenu, so a sheet's actions are drawn here (logged as a Qeetrix
+ * finding).
  */
 @Composable
 fun SheetAction(
@@ -120,7 +121,7 @@ fun SheetAction(
             .fillMaxWidth()
             .heightIn(min = QeetrixAccessibility.MinimumTouchTarget)
             .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = QeetrixSpace.InsetXl, vertical = QeetrixSpace.InsetMd),
+            .padding(vertical = QeetrixSpace.InsetMd),
         horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
         verticalAlignment = Alignment.CenterVertically,
     ) {

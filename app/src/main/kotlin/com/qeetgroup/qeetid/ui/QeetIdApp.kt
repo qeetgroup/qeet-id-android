@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.qeetgroup.qeetid.AppContainer
 import com.qeetgroup.qeetid.codes.AccountsRoute
+import com.qeetgroup.qeetid.codes.ScanAccountRoute
+import com.qeetgroup.qeetid.codes.TypeKeyRoute
 import com.qeetgroup.qeetid.lock.LockedScreen
 import com.qeetgroup.qeetid.lock.UserVerification
 import com.qeetgroup.qeetid.onboarding.LockSetupScreen
@@ -79,5 +81,7 @@ private fun AppNavHost(
             )
         }
         composable<Accounts> { AccountsRoute(navController) }
+        composable<ScanAccount> { ScanAccountRoute(navController) }
+        composable<TypeKey> { TypeKeyRoute(navController) }
     }
 }
