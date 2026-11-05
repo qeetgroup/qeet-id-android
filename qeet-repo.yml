@@ -1,0 +1,90 @@
+# qeet-id-android — repository context metadata (Level 2).
+# Inherits qeetgroup/qeet-context (L0) and qeetgroup/qeet-id-context (L1).
+
+schema_version: 1
+
+context: {type: repository, level: L2, canonical: true, last_verified: "2026-11-06"}
+
+inheritance:
+  organization: {repository: qeetgroup/qeet-context, level: L0}
+  product:      {repository: qeetgroup/qeet-id-context, level: L1}
+
+repository:
+  name: qeet-id-android
+  product: qeet-id
+  type: mobile-app
+  role: authenticator
+  status: development
+  visibility: private
+  default_branch: main
+  working_branch: develop
+  replaces: qeetgroup/qeet-id-auth   # the Expo / React Native app
+
+runtime:
+  platform: Android
+  min_sdk: 29
+  compile_sdk: 37
+  target_sdk: 37
+  language: Kotlin 2.4.21
+  ui: Jetpack Compose (BOM 2026.09.00)
+  build: gradle 9.8.2 (Kotlin DSL, wrapper), AGP 9.5.0, JDK 17+
+  design_system: Qeetrix for Android 0.1.0 (composite build of qeetgroup/qeetrix-android, tag v0.1.0, pinned commit)
+  dependencies:
+    - androidx (core, activity-compose, lifecycle, navigation-compose, fragment, biometric)
+    - androidx.camera (camera2, lifecycle, view)
+    - com.google.zxing:core           # on-device QR decoding
+    - com.squareup.okhttp3:okhttp
+    - org.jetbrains.kotlinx:kotlinx-serialization-json
+    - com.google.firebase:firebase-messaging   # optional at build time (app/google-services.json)
+
+app:
+  application_id: com.qeetgroup.qeetid
+  name: Qeet ID
+  package_root: com.qeetgroup.qeetid
+  version: 1.0.0                     # gradle.properties qeetid.versionName / qeetid.versionCode
+  deep_link: qeetidauth://pair?code=…
+
+contracts:
+  consumes:
+    api: qeet-id-server
+    documents: [api/openapi/auth.yaml]
+    tiebreaker: internal/access/mfa/{pairing,push}.go
+    base_url: https://api.id.qeet.in
+  routes:
+    - POST /v1/mfa/push/pairing/claim              # pairing code → device credential
+    - GET  /v1/mfa/push/challenges/{id}
+    - POST /v1/mfa/push/challenges/{id}/respond    # device credential + number to approve
+    - POST /v1/mfa/push/devices/{id}/pending       # device credential
+    - POST /v1/mfa/push/devices/{id}/push-token    # device credential
+    - POST /v1/mfa/push/devices/{id}/unlink        # device credential
+  push: FCM data message {type: sign_in_request, challenge_id, action}, channel push-mfa
+  auth_scheme: "none on the phone's routes: the pairing code, then user_id + device_token in the body"
+
+commands:
+  setup: scripts/fetch-qeetrix.sh
+  check: ./gradlew build             # the gate: assemble, unit + Compose tests, Android Lint, ktlint
+  test:  ./gradlew :app:testDebugUnitTest
+  format: ./gradlew :app:ktlintFormat
+
+ci:
+  workflows: [ci.yml, security.yml, codeql.yml]
+  runs_on: pull requests into main, pushes to main, workflow_dispatch
+  release: none yet (no Play Store workflow)
+
+security:
+  sensitive_paths:
+    - app/src/main/kotlin/com/qeetgroup/qeetid/data/secure/          # Keystore sealing
+    - app/src/main/kotlin/com/qeetgroup/qeetid/codes/AccountStore.kt # secrets and codes
+    - app/src/main/kotlin/com/qeetgroup/qeetid/approvals/PhoneLinkStore.kt  # the device credential
+    - app/src/main/kotlin/com/qeetgroup/qeetid/data/api/QeetIdApi.kt # the credential on the wire
+    - app/src/main/kotlin/com/qeetgroup/qeetid/approvals/RequestScreen.kt  # number + biometric before approving
+    - app/src/main/res/xml/                                          # backup and network rules
+  never: [put a secret in UI state or a log, back up the vault, accept an access token, link without a tap, approve without the number and BiometricPrompt, cleartext in release]
+
+llm_context:
+  primary_instructions: AGENTS.md
+  canonical: docs/llm/context.md
+  boundaries: docs/llm/boundaries.md
+  workflows: docs/llm/workflows.md
+  architecture_map: docs/llm/architecture-map.md
+  adapters: [CLAUDE.md, GEMINI.md, .github/copilot-instructions.md]
