@@ -11,6 +11,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.qeetgroup.qeetid.AppContainer
+import androidx.navigation.toRoute
+import com.qeetgroup.qeetid.approvals.LinkPhoneRoute
+import com.qeetgroup.qeetid.approvals.NamePhoneRoute
+import com.qeetgroup.qeetid.approvals.PhoneLinkedRoute
+import com.qeetgroup.qeetid.approvals.ScanPairingRoute
+import com.qeetgroup.qeetid.approvals.SignInRequestScreenRoute
 import com.qeetgroup.qeetid.codes.AccountsRoute
 import com.qeetgroup.qeetid.codes.ScanAccountRoute
 import com.qeetgroup.qeetid.codes.TypeKeyRoute
@@ -83,5 +89,10 @@ private fun AppNavHost(
         composable<Accounts> { AccountsRoute(navController) }
         composable<ScanAccount> { ScanAccountRoute(navController) }
         composable<TypeKey> { TypeKeyRoute(navController) }
+        composable<LinkPhone> { LinkPhoneRoute(navController) }
+        composable<ScanPairing> { ScanPairingRoute(navController) }
+        composable<NamePhone> { entry -> NamePhoneRoute(navController, entry.toRoute<NamePhone>().code) }
+        composable<PhoneLinked> { PhoneLinkedRoute(navController) }
+        composable<SignInRequestRoute> { entry -> SignInRequestScreenRoute(navController, entry.toRoute<SignInRequestRoute>().id) }
     }
 }

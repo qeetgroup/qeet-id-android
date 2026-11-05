@@ -187,6 +187,7 @@
     <string name="request_question_step_up">Are you confirming it\'s you in Qeet ID?</string>
     <string name="request_question_other">Is this you, in Qeet ID?</string>
     <string name="request_browser">Browser</string>
+    <string name="request_browser_on">%1$s on %2$s</string>
     <string name="request_time">Time</string>
     <string name="request_near">Near</string>
     <string name="request_ip">IP address</string>

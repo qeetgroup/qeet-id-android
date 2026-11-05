@@ -1,6 +1,7 @@
 package com.qeetgroup.qeetid
 
 import android.app.Application
+import com.qeetgroup.qeetid.approvals.push.SignInNotifications
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -11,6 +12,9 @@ class QeetIdApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        SignInNotifications.ensureChannel(this)
+        // Firebase may have replaced the push token while the app was not running.
+        container.pushSync.syncCurrent()
         ProcessLifecycleOwner.get().lifecycle.addObserver(
             object : DefaultLifecycleObserver {
                 override fun onStart(owner: LifecycleOwner) {

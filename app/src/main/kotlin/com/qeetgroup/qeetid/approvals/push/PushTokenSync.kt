@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.security.MessageDigest
+import java.util.Locale
 
 /**
  * Keeps the server's copy of this phone's push token current. Firebase replaces tokens now and then
@@ -30,7 +31,11 @@ class PushTokenSync(
     }
 
     fun syncCurrent() {
-        scope.launch { tokens.token()?.let { sync(it) } }
+        scope.launch {
+            // Only a linked phone asks for a token: asking turns Firebase's token creation on.
+            if (links.get() == null) return@launch
+            tokens.token()?.let { sync(it) }
+        }
     }
 
     suspend fun sync(token: String): PushTokenResult? =
@@ -58,6 +63,6 @@ class PushTokenSync(
             MessageDigest
                 .getInstance("SHA-256")
                 .digest(token.toByteArray())
-                .joinToString("") { "%02x".format(it) }
+                .joinToString("") { "%02x".format(Locale.ROOT, it) }
     }
 }
