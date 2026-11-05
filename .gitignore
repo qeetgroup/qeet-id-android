@@ -4,17 +4,22 @@
 # Gradle
 .gradle/
 build/
+.kotlin/
 !gradle/wrapper/gradle-wrapper.jar
+# Android Studio writes the Gradle daemon's JDK choice here; each machine picks its own JDK.
+gradle/gradle-daemon-jvm.properties
+
+# Qeetrix for Android, fetched at the pinned release by scripts/fetch-qeetrix.sh
+.qeetrix/
 
 # Android Studio / IntelliJ
 .idea/
 *.iml
-.kotlin/
 captures/
 .externalNativeBuild/
 .cxx/
 
-# Local configuration
+# Local configuration (SDK path, qeetrix.dir, qeetid.apiUrl)
 local.properties
 
 # Build outputs
@@ -24,7 +29,7 @@ local.properties
 *.dex
 output-metadata.json
 
-# Signing and secrets
+# Signing and secrets: the release keystore and its passwords, and the Firebase app config (docs/firebase.md)
 *.jks
 *.keystore
 keystore.properties

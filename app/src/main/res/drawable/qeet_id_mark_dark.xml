@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- brand/final/qeet-id-app-icon-dark-rounded.svg: the app icon, shown inside the app (welcome, locked). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+    <clip-path android:pathData="M22.37,0H77.63A22.37,22.37 0,0 1,100 22.37V77.63A22.37,22.37 0,0 1,77.63 100H22.37A22.37,22.37 0,0 1,0 77.63V22.37A22.37,22.37 0,0 1,22.37 0Z" />
+    <path
+        android:fillColor="#191818"
+        android:pathData="M0,0h100v100h-100z" />
+    <group android:translateX="2">
+        <path
+            android:pathData="M19.8,50A16.2,16.2 0,1 1,52.2 50A16.2,16.2 0,1 1,19.8 50Z"
+            android:strokeWidth="12.29"
+            android:strokeColor="#F3F1EF" />
+        <path
+            android:fillColor="#F3F1EF"
+            android:pathData="M51,44.24H84V55.76H51Z" />
+        <path
+            android:fillColor="#F26D0E"
+            android:pathData="M68.5,55.75H76V67.5H68.5Z M78.8,55.75H84V64H78.8Z" />
+    </group>
+</vector>

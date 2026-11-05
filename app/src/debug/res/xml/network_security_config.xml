@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug builds only: plain HTTP is allowed, so the app can talk to a development server on the LAN or the emulator's
+  host (qeetid.apiUrl=http://10.0.2.2:4001 in local.properties). Release builds use src/main's HTTPS-only file.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
