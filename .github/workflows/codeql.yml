@@ -1,0 +1,66 @@
+name: CodeQL
+
+# GitHub's code scanning for the Kotlin code and these workflows. Free for public repositories only, so it is skipped
+# while this repository is private.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ANDROID_PLATFORM: "platforms;android-37.0"
+  ANDROID_BUILD_TOOLS: "build-tools;36.0.0"
+
+jobs:
+  analyze:
+    name: Analyze ${{ matrix.language }}
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: java-kotlin
+            build-mode: manual
+          - language: actions
+            build-mode: none
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: github/codeql-action/init@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          queries: security-extended
+      - if: matrix.build-mode == 'manual'
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - if: matrix.build-mode == 'manual'
+        name: Android SDK packages
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "$ANDROID_PLATFORM" "$ANDROID_BUILD_TOOLS" platform-tools > /dev/null
+      - if: matrix.build-mode == 'manual'
+        name: Fetch Qeetrix for Android
+        run: scripts/fetch-qeetrix.sh
+      - if: matrix.build-mode == 'manual'
+        name: Compile the app for CodeQL to observe
+        # CodeQL reads the compiler as it runs, so nothing may come from a cache or a daemon.
+        run: >-
+          ./gradlew --console=plain --no-build-cache --no-configuration-cache --rerun-tasks
+          -Pkotlin.compiler.execution.strategy=in-process :app:assembleDebug
+      - uses: github/codeql-action/analyze@1fc58d04a4d4374f921bdac573c3811c240f9c26 # v4.39.2
+        with:
+          category: "/language:${{ matrix.language }}"

@@ -1,0 +1,54 @@
+name: CI
+
+# The gate: Gradle wrapper validation, then ./gradlew build — debug and release builds, unit and Compose UI tests,
+# Android Lint and ktlint. Runs on pull requests into main, on main after each merge, and on demand; develop is covered
+# by its pull request.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ANDROID_PLATFORM: "platforms;android-37.0"
+  ANDROID_BUILD_TOOLS: "build-tools;36.0.0"
+
+jobs:
+  build:
+    name: Build, test and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Validate the Gradle wrapper
+        uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Android SDK packages
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "$ANDROID_PLATFORM" "$ANDROID_BUILD_TOOLS" platform-tools > /dev/null
+      # Qeetrix for Android at the pinned tag and commit (gradle.properties): a public repository, no token needed.
+      - name: Fetch Qeetrix for Android
+        run: scripts/fetch-qeetrix.sh
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      - name: Build, test and lint
+        run: ./gradlew build
+      - name: Reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reports
+          path: |
+            app/build/reports/
+            app/build/test-results/
