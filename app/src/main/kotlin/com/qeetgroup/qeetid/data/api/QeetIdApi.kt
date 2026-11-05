@@ -144,6 +144,8 @@ class QeetIdApi(
     private val json =
         Json {
             ignoreUnknownKeys = true
+            // Send every field, defaults included ("platform": "android"); a null (an unset number) is left out.
+            encodeDefaults = true
             explicitNulls = false
         }
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -87,6 +88,8 @@ fun ScanAccountRoute(navController: NavHostController) {
     val container = LocalAppContainer.current
     val scope = rememberCoroutineScope()
     var problem by remember { mutableStateOf<ScanProblem?>(null) }
+    var added by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(added) { added?.let(navController::backToAccounts) }
 
     Screen(
         topBar = {
@@ -104,10 +107,7 @@ fun ScanAccountRoute(navController: NavHostController) {
             onCode = { text ->
                 when (val result = OtpAuthUri.parse(text)) {
                     is OtpAuthResult.Valid -> {
-                        scope.launch {
-                            container.accounts.add(result.account)
-                            navController.backToAccounts(result.account.issuer)
-                        }
+                        scope.launch { added = container.accounts.add(result.account).issuer }
                         true
                     }
 
@@ -164,6 +164,8 @@ fun TypeKeyRoute(navController: NavHostController) {
     var serviceError by remember { mutableStateOf<Int?>(null) }
     var keyError by remember { mutableStateOf<Int?>(null) }
     var saving by remember { mutableStateOf(false) }
+    var added by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(added) { added?.let(navController::backToAccounts) }
     val scroll = rememberScrollState()
 
     fun submit() {
@@ -187,10 +189,7 @@ fun TypeKeyRoute(navController: NavHostController) {
                 serviceError = null
                 keyError = null
                 saving = true
-                scope.launch {
-                    container.accounts.add(result.account)
-                    navController.backToAccounts(result.account.issuer)
-                }
+                scope.launch { added = container.accounts.add(result.account).issuer }
             }
         }
     }

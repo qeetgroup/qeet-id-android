@@ -178,8 +178,9 @@ fun AccountsScreen(
     }
     LaunchedEffect(added) {
         val issuer = added ?: return@LaunchedEffect
+        // Shown in the screen's own scope: clearing the marker re-keys this effect, which must not cancel it.
+        scope.launch { snackbars.show(resources.getString(R.string.account_added, issuer), QeetrixSnackbarTone.Success) }
         onAddedShown()
-        snackbars.show(resources.getString(R.string.account_added, issuer), QeetrixSnackbarTone.Success)
     }
 
     Box(Modifier.fillMaxSize()) {
