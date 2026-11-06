@@ -149,7 +149,7 @@
     <string name="link_unavailable_title">This build can\'t get sign-in requests</string>
     <string name="link_unavailable_body">It was built without Firebase, so it can\'t be linked. Install Qeet ID from Google Play.</string>
     <string name="link_stand_in_title">Debug build without Firebase</string>
-    <string name="link_stand_in_body">This phone links with a stand-in push token. Sign-in requests reach it only through the debug entry point.</string>
+    <string name="link_stand_in_body">This phone links with a stand-in push token. Sign-in requests reach it when the app comes to the foreground, on pull to refresh, or through the debug entry point.</string>
     <string name="scan_pairing_guidance">Point the camera at the code in Qeet ID</string>
     <string name="scan_pairing_not_code_title">Not a pairing code</string>
     <string name="scan_pairing_not_code_body">This isn\'t a Qeet ID pairing code. In Qeet ID on your computer, open Account, then Security, choose Link a phone and scan the code it shows.</string>

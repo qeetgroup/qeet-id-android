@@ -25,9 +25,9 @@ val productionApi = "https://api.id.qeet.in"
  * string resources Firebase reads at start-up — what the google-services plugin would generate — so no extra plugin is
  * needed. See docs/firebase.md.
  */
+@Suppress("UNCHECKED_CAST") // google-services.json read as JSON maps
 val firebase: Map<String, String>? =
     file("google-services.json").takeIf { it.isFile }?.let { json ->
-        @Suppress("UNCHECKED_CAST")
         val root = JsonSlurper().parse(json) as Map<String, Any?>
         val project = root["project_info"] as Map<String, Any?>
         val clients = root["client"] as List<Map<String, Any?>>
@@ -82,8 +82,10 @@ android {
 
     buildTypes {
         debug {
-            // A debug build may talk to a development server on the LAN (cleartext is allowed only in debug builds,
-            // src/debug/res/xml/network_security_config.xml): qeetid.apiUrl=http://10.0.2.2:4001 in local.properties.
+            // A debug build may talk to a development server (cleartext is allowed only in debug builds,
+            // src/debug/res/xml/network_security_config.xml): qeetid.apiUrl=http://127.0.0.1:4001 in local.properties,
+            // with `adb reverse tcp:4001 tcp:4001`. Android 17 keeps apps targeting it off private addresses (10.0.2.2,
+            // the LAN) without the local network permission, and loopback is not one.
             buildConfigField("String", "API_BASE_URL", "\"${setting("qeetid.apiUrl") ?: productionApi}\"")
         }
         release {
