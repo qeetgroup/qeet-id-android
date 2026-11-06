@@ -11,6 +11,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -204,6 +205,9 @@ class QeetIdApiTest {
             assertEquals(PushTokenResult.NotSupported, api.updatePushToken("d1", "u1", "t1", "fcm-2"))
             respond(401, error("mfa.push_unauthorized"))
             assertEquals(PushTokenResult.Unauthorized, api.updatePushToken("d1", "u1", "t1", "fcm-2"))
+            // A 401 that isn't Qeet ID's (a proxy, a gateway) must not make the phone forget its link.
+            respond(401, "Unauthorized")
+            assertNotEquals(PushTokenResult.Unauthorized, api.updatePushToken("d1", "u1", "t1", "fcm-2"))
         }
 
     @Test
@@ -220,6 +224,8 @@ class QeetIdApiTest {
             assertEquals(PendingResult.NotSupported, api.pendingRequests("d1", "u1", "t1"))
             respond(401, error("mfa.push_unauthorized"))
             assertEquals(PendingResult.Unauthorized, api.pendingRequests("d1", "u1", "t1"))
+            respond(401, "Unauthorized")
+            assertEquals(PendingResult.Network, api.pendingRequests("d1", "u1", "t1"))
         }
 
     @Test

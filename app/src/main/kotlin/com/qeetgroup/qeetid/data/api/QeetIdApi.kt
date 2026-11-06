@@ -253,7 +253,7 @@ class QeetIdApi(
                 if (res.isSuccessful) return UnlinkResult.Removed
                 val error = error(res)
                 when {
-                    res.code == 401 && error?.code == "mfa.push_unauthorized" -> UnlinkResult.AlreadyRemoved
+                    res.code == 401 && error?.code == PUSH_UNAUTHORIZED -> UnlinkResult.AlreadyRemoved
                     res.code in 500..599 -> UnlinkResult.Network
                     else -> UnlinkResult.Refused(error?.message)
                 }
@@ -282,7 +282,10 @@ class QeetIdApi(
                 val error = error(res)
                 when {
                     (res.code == 404 || res.code == 405) && error?.code == null -> PendingResult.NotSupported
-                    res.code == 401 -> PendingResult.Unauthorized
+
+                    // Only Qeet ID's own answer forgets the link; a 401 from a proxy or gateway on the way must not.
+                    res.code == 401 && error?.code == PUSH_UNAUTHORIZED -> PendingResult.Unauthorized
+
                     else -> PendingResult.Network
                 }
             }
@@ -306,7 +309,7 @@ class QeetIdApi(
                     // A route the server does not have answers 404 or 405 with no error code of Qeet ID's.
                     (res.code == 404 || res.code == 405) && error?.code == null -> PushTokenResult.NotSupported
 
-                    res.code == 401 -> PushTokenResult.Unauthorized
+                    res.code == 401 && error?.code == PUSH_UNAUTHORIZED -> PushTokenResult.Unauthorized
 
                     res.code in 500..599 -> PushTokenResult.Network
 
@@ -382,6 +385,9 @@ class QeetIdApi(
     companion object {
         private val JSON = "application/json; charset=utf-8".toMediaType()
         private const val DEFAULT_RETRY_SECONDS = 60
+
+        /** The server's answer when this phone's device credential is wrong or expired: the link is gone. */
+        private const val PUSH_UNAUTHORIZED = "mfa.push_unauthorized"
 
         fun defaultClient(): OkHttpClient =
             OkHttpClient
