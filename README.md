@@ -81,12 +81,13 @@ Qeetrix for Android is built from source in the same Gradle run (a composite bui
 
 ### 🧪 Against a development server
 
-A release build always talks to `https://api.id.qeet.in`. A debug build can be pointed at a server on your machine or
-LAN, over plain HTTP:
+A release build always talks to `https://api.id.qeet.in`. A debug build can be pointed at a server on your machine,
+over plain HTTP. Forward the port to the emulator or a USB phone, and use loopback: Android 17 keeps an app that targets
+it off private addresses (`10.0.2.2`, the LAN) unless it holds the local network permission, and loopback is not one.
 
-```properties
-# local.properties
-qeetid.apiUrl=http://10.0.2.2:4001   # the emulator's address for your computer
+```sh
+adb reverse tcp:4001 tcp:4001
+echo "qeetid.apiUrl=http://127.0.0.1:4001" >> local.properties
 ```
 
 Without Firebase, a debug build links with a stand-in push token, and requests reach it when the app comes to the

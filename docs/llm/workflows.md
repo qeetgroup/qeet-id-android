@@ -46,8 +46,9 @@ When Qeetrix lacks something, compose it from Qeetrix primitives in `ui/Common.k
 
 1. Start `qeet-id-server` with no push service configured (no Expo, FCM or APNs credentials), listening on your
    machine.
-2. `local.properties`: `qeetid.apiUrl=http://10.0.2.2:4001` (the emulator's address for your computer; use the
-   machine's LAN address for a phone).
+2. `adb reverse tcp:4001 tcp:4001`, and `qeetid.apiUrl=http://127.0.0.1:4001` in `local.properties`. Not
+   `10.0.2.2` or a LAN address: Android 17 blocks private addresses for apps that target it unless they hold the
+   local network permission (the connection just times out), and loopback is exempt.
 3. Give the emulator a screen lock (approving needs one): `adb shell locksettings set-pin 1234`.
 4. `./gradlew :app:installDebug`, open the app, go through the welcome pages.
 5. In Qeet ID (or with the API), sign in and ask for a pairing code; in the app, Link this phone › Type the code

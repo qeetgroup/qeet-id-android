@@ -52,7 +52,8 @@ accepting it 180 days after the last link. Treat it as a password.
 ## API interaction
 
 `BuildConfig.API_BASE_URL`: `https://api.id.qeet.in` in release builds (HTTPS enforced in `AppContainer.apiBaseUrl`
-and by the network security config); debug builds read `qeetid.apiUrl` from `local.properties`, cleartext allowed.
+and by the network security config); debug builds read `qeetid.apiUrl` from `local.properties`, cleartext allowed —
+`http://127.0.0.1:4001` with `adb reverse`, since Android 17 blocks private addresses for apps targeting it.
 OkHttp follows no redirects (the credential is in bodies).
 
 | Mode | Route | Auth |
