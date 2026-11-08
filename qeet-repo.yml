@@ -28,7 +28,7 @@ runtime:
   language: Kotlin 2.4.21
   ui: Jetpack Compose (BOM 2026.09.00)
   build: gradle 9.8.2 (Kotlin DSL, wrapper), AGP 9.5.0, JDK 17+
-  design_system: Qeetrix for Android 0.1.0 (composite build of qeetgroup/qeetrix-android, tag v0.1.0, pinned commit)
+  design_system: Qeetrix for Android 0.2.0 (composite build of qeetgroup/qeetrix-android, tag v0.2.0, pinned commit)
   dependencies:
     - androidx (core, activity-compose, lifecycle, navigation-compose, fragment, biometric)
     - androidx.camera (camera2, lifecycle, view)

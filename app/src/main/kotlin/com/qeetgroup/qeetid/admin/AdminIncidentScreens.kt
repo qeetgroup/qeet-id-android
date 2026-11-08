@@ -54,6 +54,7 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.components.emptystate.QeetrixEmptyState
+import com.qeetgroup.qeetrix.components.emptystate.QeetrixEmptyStateTone
 import com.qeetgroup.qeetrix.components.typography.QeetrixHeading
 import com.qeetgroup.qeetrix.components.typography.QeetrixHeadingSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
@@ -237,6 +238,7 @@ fun AdminEventsRoute(navController: NavHostController) {
                         stringResource(R.string.admin_events_none),
                         icon = QeetrixIconName.CircleCheck,
                         description = stringResource(R.string.admin_events_none_body),
+                        tone = QeetrixEmptyStateTone.Success,
                     )
                 } else {
                     SettingsGroup(stringResource(R.string.admin_events_list)) {

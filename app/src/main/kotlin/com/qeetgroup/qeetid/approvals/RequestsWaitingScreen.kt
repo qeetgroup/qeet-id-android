@@ -55,6 +55,7 @@ import com.qeetgroup.qeetid.ui.SignInRequestRoute
 import com.qeetgroup.qeetid.ui.isTablet
 import com.qeetgroup.qeetid.ui.readingColumn
 import com.qeetgroup.qeetrix.components.actionbar.QeetrixBottomActionBar
+import com.qeetgroup.qeetrix.components.actionbar.QeetrixBottomActionBarArrangement
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlert
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlertTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButton
@@ -65,6 +66,7 @@ import com.qeetgroup.qeetrix.components.spinner.QeetrixSpinner
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
+import com.qeetgroup.qeetrix.foundation.format.QeetrixFormat
 import com.qeetgroup.qeetrix.foundation.shape.QeetrixShapes
 import com.qeetgroup.qeetrix.foundation.sizing.QeetrixSize
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
@@ -79,6 +81,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeParseException
 import java.util.Date
@@ -303,7 +306,7 @@ fun RequestsWaitingScreen(
                 }
 
                 state == WaitingState.LoadFailed -> {
-                    QeetrixBottomActionBar {
+                    QeetrixBottomActionBar(arrangement = QeetrixBottomActionBarArrangement.PrimaryFills) {
                         QuietButton(stringResource(R.string.action_done), onBack)
                         QeetrixButton(
                             stringResource(R.string.action_try_again),
@@ -399,7 +402,10 @@ private fun WaitingRow(
     val colors = QeetrixTheme.colors
     val request = item.request
     val what = browserOf(request) ?: stringResource(R.string.requests_unknown_browser)
-    val time = RequestViewModel.requestedAtMillis(request)?.let { DateFormat.getTimeFormat(context).format(Date(it)) }
+    val time =
+        RequestViewModel.requestedAtMillis(request)?.let {
+            QeetrixFormat.time(Instant.ofEpochMilli(it), hour24 = DateFormat.is24HourFormat(context))
+        }
     val place =
         request.context.location
             ?.takeIf { it.isNotBlank() }
@@ -415,7 +421,7 @@ private fun WaitingRow(
         onClick = onClick,
         leading = {
             Box(Modifier.size(40.dp).background(colors.bgNeutralSubtle, QeetrixShapes.Control), contentAlignment = Alignment.Center) {
-                AppIcon(deviceIcon(request), null, size = QeetrixSize.IconMd, tint = colors.iconSubtle)
+                DeviceIcon(request, colors.iconSubtle)
             }
         },
         trailing = {
@@ -432,11 +438,14 @@ private fun WaitingRow(
 }
 
 /** A laptop for a Mac or Chromebook, a phone for a phone or tablet, a monitor otherwise. */
-private fun deviceIcon(request: SignInRequest): AppIconName {
-    val system = request.context.userAgent?.let { BrowserName.parts(it).system }
-    return when (system) {
-        "macOS", "ChromeOS" -> AppIconName.Laptop
-        "iOS", "iPadOS", "Android" -> AppIconName.Smartphone
-        else -> AppIconName.Monitor
+@Composable
+private fun DeviceIcon(
+    request: SignInRequest,
+    tint: androidx.compose.ui.graphics.Color,
+) {
+    when (request.context.userAgent?.let { BrowserName.parts(it).system }) {
+        "macOS", "ChromeOS" -> AppIcon(AppIconName.Laptop, null, size = QeetrixSize.IconMd, tint = tint)
+        "iOS", "iPadOS", "Android" -> QeetrixIcon(QeetrixIconName.Smartphone, null, size = QeetrixSize.IconMd, tint = tint)
+        else -> AppIcon(AppIconName.Monitor, null, size = QeetrixSize.IconMd, tint = tint)
     }
 }

@@ -39,6 +39,7 @@ import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetrix.components.scanner.QeetrixQRScanner
+import com.qeetgroup.qeetrix.components.scanner.QeetrixScannerControlsLayout
 import com.qeetgroup.qeetrix.components.scanner.QeetrixScannerState
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -53,6 +54,8 @@ import java.util.concurrent.Executors
 @Composable
 fun QrScanner(
     guidance: String,
+    enterKeyLabel: String,
+    deniedDescription: String,
     onEnterKey: () -> Unit,
     onCode: (String) -> Boolean,
     modifier: Modifier = Modifier,
@@ -87,6 +90,10 @@ fun QrScanner(
         onTorchChange = if (hasTorch) ({ torch = it }) else null,
         onEnterKey = onEnterKey,
         onAllowCamera = { ask.launch(Manifest.permission.CAMERA) },
+        enterKeyLabel = enterKeyLabel,
+        deniedDescription = deniedDescription,
+        // The typed way in and the torch in one row, the typed way filling it.
+        controlsLayout = QeetrixScannerControlsLayout.Row,
     ) {
         CameraPreview(
             torch = torch,

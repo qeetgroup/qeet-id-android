@@ -25,6 +25,7 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
+import com.qeetgroup.qeetrix.icons.QeetrixIconName
 
 /**
  * Update required: Qeet ID no longer accepts this version for sign-in approvals. It says what stops (approvals) and
@@ -58,7 +59,7 @@ fun UpdateRequiredScreen(onShowCodes: () -> Unit) {
     ) {
         ResultDetails(listOf(stringResource(R.string.update_this_version) to BuildConfig.VERSION_NAME))
         Spacer(Modifier.height(QeetrixSpace.GapLg))
-        ResultNote(AppIconName.KeyRound, stringResource(R.string.update_keeps, deviceWord()))
+        ResultNote(QeetrixIconName.KeyRound, stringResource(R.string.update_keeps, deviceWord()))
     }
 }
 

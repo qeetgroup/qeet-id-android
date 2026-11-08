@@ -70,6 +70,8 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButton
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
+import com.qeetgroup.qeetrix.components.navigation.QeetrixBackButton
+import com.qeetgroup.qeetrix.components.navigation.QeetrixTopAppBar
 import com.qeetgroup.qeetrix.components.progress.QeetrixProgress
 import com.qeetgroup.qeetrix.components.separator.QeetrixSeparator
 import com.qeetgroup.qeetrix.components.separator.QeetrixSeparatorTone
@@ -175,11 +177,11 @@ fun WelcomeScreen(onGetStarted: () -> Unit) {
                     Spacer(Modifier.height(if (short) QeetrixSpace.InsetLg else QeetrixSpace.LayoutSm))
                     QeetrixSeparator(tone = QeetrixSeparatorTone.Default)
                     WelcomeRow({
-                        AppIcon(AppIconName.KeyRound, null, tint = colors.iconBrand)
+                        QeetrixIcon(QeetrixIconName.KeyRound, null, tint = colors.iconBrand)
                     }, R.string.welcome_codes_title, stringResource(R.string.welcome_codes_body), short)
                     QeetrixSeparator()
                     WelcomeRow({
-                        AppIcon(AppIconName.ShieldCheck, null, tint = colors.iconBrand)
+                        QeetrixIcon(QeetrixIconName.ShieldCheck, null, tint = colors.iconBrand)
                     }, R.string.welcome_approvals_title, stringResource(R.string.welcome_approvals_body), short)
                     QeetrixSeparator()
                     WelcomeRow(
@@ -233,7 +235,11 @@ private fun SetupBar(
     onBack: () -> Unit,
 ) {
     Column {
-        ScreenBar(title = stringResource(R.string.onboarding_step, step, totalSteps), onBack = onBack)
+        QeetrixTopAppBar(
+            title = null,
+            description = stringResource(R.string.onboarding_step, step, totalSteps),
+            navigationIcon = { QeetrixBackButton(onBack) },
+        )
         QeetrixProgress(
             value = step * 100f / totalSteps,
             contentDescription = stringResource(R.string.onboarding_progress, step, totalSteps),
@@ -349,7 +355,7 @@ fun LockSetupScreen(
                     } else {
                         RingsSize.Sm
                     },
-                    seal = { AppIcon(AppIconName.FingerprintPattern, null, Modifier.fillMaxSize()) },
+                    seal = { QeetrixIcon(QeetrixIconName.FingerprintPattern, null, Modifier.fillMaxSize()) },
                 )
                 Spacer(Modifier.height(QeetrixSpace.InsetLg))
             }

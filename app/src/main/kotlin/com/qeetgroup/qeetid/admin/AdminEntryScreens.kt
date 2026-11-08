@@ -60,6 +60,8 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
+import com.qeetgroup.qeetrix.icons.QeetrixIcon
+import com.qeetgroup.qeetrix.icons.QeetrixIconName
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -136,7 +138,7 @@ fun AdminSignInRoute(navController: NavHostController) {
         MarkRings(
             if (short) RingsSize.Xs else RingsSize.Sm,
             modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
-            seal = { AppIcon(AppIconName.ShieldCheck, null, Modifier.fillMaxSize()) },
+            seal = { QeetrixIcon(QeetrixIconName.ShieldCheck, null, Modifier.fillMaxSize()) },
         )
         Spacer(Modifier.height(if (short) QeetrixSpace.GapMd else 20.dp))
         PageTitle(stringResource(R.string.admin_sign_in_heading), stringResource(R.string.admin_sign_in_body), centred = true)

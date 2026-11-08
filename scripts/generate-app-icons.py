@@ -12,9 +12,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 ICONS = [
-    "arrow-left-right", "bell-ring", "bot-off", "clipboard-paste", "clock-alert", "download", "fingerprint-pattern",
-    "globe", "hash", "key-round", "laptop", "link", "log-out", "monitor", "qr-code", "rotate-ccw", "scan-face",
-    "shield-alert", "shield-check", "smartphone", "sparkles", "square-arrow-out-up-right",
+    "bell-ring", "bot-off", "download", "globe", "laptop", "monitor", "rotate-ccw", "shield-alert",
 ]
 
 OUT = pathlib.Path(__file__).resolve().parent.parent / "app/src/main/kotlin/com/qeetgroup/qeetid/ui/AppIcons.kt"

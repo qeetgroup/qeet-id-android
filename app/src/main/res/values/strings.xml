@@ -111,14 +111,12 @@
         <item quantity="other">%d digits</item>
     </plurals>
     <plurals name="type_key_every_seconds">
-        <item quantity="one">every %d second</item>
-        <item quantity="other">every %d seconds</item>
+        <item quantity="one">every %d s</item>
+        <item quantity="other">every %d s</item>
     </plurals>
     <string name="type_key_digits">Digits</string>
     <string name="type_key_period">New code every</string>
     <string name="type_key_algorithm">Algorithm</string>
-    <string name="period_30">30 seconds</string>
-    <string name="period_60">60 seconds</string>
     <string name="type_key_add">Add account</string>
     <string name="type_key_service_required">Give it a name, so you can find it.</string>
     <string name="type_key_key_required">Enter the setup key from the site.</string>
@@ -525,4 +523,9 @@
         <item quantity="one">%1$d running in this organisation</item>
         <item quantity="other">%1$d running in this organisation</item>
     </plurals>
+    <string name="type_key_settings_note">Change these only if the site says to.</string>
+    <string name="type_key_seconds">%1$d s</string>
+    <string name="scan_camera_off_body">Allow the camera for Qeet ID in Settings to scan QR codes, or type the setup key the site shows instead.</string>
+    <string name="scan_pairing_type_instead">Type the code instead</string>
+    <string name="scan_pairing_camera_off_body">Allow the camera for Qeet ID in Settings to scan the code, or type it to link this %1$s.</string>
 </resources>

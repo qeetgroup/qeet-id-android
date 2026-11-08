@@ -34,8 +34,8 @@ class CodeClipboard(
         clearLater(code)
     }
 
-    /** Schedules the clear of [code], copied by Qeetrix's code (QeetrixOTPCode copies on tap itself). */
-    fun clearLater(code: String) {
+    /** Schedules the clear of [code], copied by [copy]. */
+    private fun clearLater(code: String) {
         clearing?.cancel()
         clearing =
             scope.launch {

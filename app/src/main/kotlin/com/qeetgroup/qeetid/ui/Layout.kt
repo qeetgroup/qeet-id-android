@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetrix.components.actionbar.QeetrixBottomActionBar
+import com.qeetgroup.qeetrix.components.actionbar.QeetrixBottomActionBarArrangement
 import com.qeetgroup.qeetrix.components.navigation.QeetrixBackButton
 import com.qeetgroup.qeetrix.components.navigation.QeetrixTopAppBar
 import com.qeetgroup.qeetrix.components.typography.QeetrixHeading
@@ -107,7 +108,13 @@ fun ScrollingPage(
     Screen(
         modifier = modifier,
         topBar = topBar,
-        bottomBar = { if (actions != null) QeetrixBottomActionBar(scroll = scroll, content = actions) },
+        // Two actions as the mockups draw Android's bar: the quiet one at its own width at the start, the primary filling
+        // the rest.
+        bottomBar = {
+            if (actions != null) {
+                QeetrixBottomActionBar(scroll = scroll, arrangement = QeetrixBottomActionBarArrangement.PrimaryFills, content = actions)
+            }
+        },
     ) {
         Column(
             Modifier
@@ -264,7 +271,9 @@ fun ResultPage(
     val short = isShort()
     val tablet = isTablet()
     val scroll = rememberScrollState()
-    Screen(bottomBar = { QeetrixBottomActionBar(scroll = scroll, content = actions) }) {
+    Screen(bottomBar = {
+        QeetrixBottomActionBar(scroll = scroll, arrangement = QeetrixBottomActionBarArrangement.PrimaryFills, content = actions)
+    }) {
         Column(
             Modifier
                 .weight(1f)

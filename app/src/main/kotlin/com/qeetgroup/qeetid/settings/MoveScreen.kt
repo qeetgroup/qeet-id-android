@@ -23,7 +23,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.ui.GroupLabel
-import com.qeetgroup.qeetid.ui.LetterTile
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.NumberedSteps
 import com.qeetgroup.qeetid.ui.PageTitle
@@ -37,6 +36,7 @@ import com.qeetgroup.qeetrix.components.alert.QeetrixAlert
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlertTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButton
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
+import com.qeetgroup.qeetrix.components.list.QeetrixListItemIcon
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
@@ -110,7 +110,7 @@ fun MoveRoute(navController: NavHostController) {
                         horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        LetterTile(initialOf(site), size = 28.dp)
+                        QeetrixListItemIcon(initialOf(site))
                         Column(Modifier.weight(1f)) {
                             QeetrixText(
                                 site.ifBlank { stringResource(R.string.account_unnamed) },

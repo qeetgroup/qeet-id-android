@@ -269,6 +269,8 @@ fun ScanPairingRoute(navController: NavHostController) {
         Box(Modifier.weight(1f).fillMaxWidth()) {
             QrScanner(
                 guidance = stringResource(R.string.scan_pairing_guidance),
+                enterKeyLabel = stringResource(R.string.scan_pairing_type_instead),
+                deniedDescription = stringResource(R.string.scan_pairing_camera_off_body, deviceWord()),
                 onEnterKey = { navController.navigate(NamePhone()) { popUpTo(ScanPairing) { inclusive = true } } },
                 paused = refused != null || link != null,
                 modifier = Modifier.fillMaxSize(),
@@ -419,6 +421,7 @@ fun NamePhoneRoute(
                 QeetrixTextField(
                     code,
                     stringResource(R.string.pairing_code_label),
+                    mono = true,
                     placeholder = stringResource(R.string.pairing_code_placeholder),
                     description = stringResource(R.string.pairing_code_help),
                     error = if (state.codeError) stringResource(R.string.pairing_code_invalid) else null,

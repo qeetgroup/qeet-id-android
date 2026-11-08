@@ -73,8 +73,8 @@ fun AppMark(
 private val APP_MARK_SIZE = 48.dp
 
 /**
- * A square tile with a letter or a number, the size of [com.qeetgroup.qeetrix.components.list.QeetrixListItemIcon]'s:
- * an account's initial, a step's number. Qeetrix has no text tile (logged as a Qeetrix finding).
+ * A small square tile with an account's initial, inside a text field (Site or app). List rows use Qeetrix's own
+ * [com.qeetgroup.qeetrix.components.list.QeetrixListItemIcon], which is a fixed 32 dp row tile.
  */
 @Composable
 fun LetterTile(
@@ -101,98 +101,3 @@ fun initialOf(name: String): String =
         .trim()
         .firstOrNull { it.isLetterOrDigit() }
         ?.uppercase() ?: "?"
-
-/**
- * An action row in a bottom sheet (whose body supplies the side padding): a 20 dp icon, the label in `body.md` and, if
- * it helps, one line under it; red when destructive. Qeetrix's menu items need a QeetrixMenu, so a sheet's actions are
- * drawn here (logged as a Qeetrix finding).
- */
-@Composable
-fun SheetAction(
-    icon: QeetrixIconName,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    danger: Boolean = false,
-    description: String? = null,
-) {
-    val colors = QeetrixTheme.colors
-    SheetAction(
-        leading = {
-            QeetrixIcon(
-                icon,
-                contentDescription = null,
-                size = QeetrixSize.IconMd,
-                tint = if (danger) colors.textDanger else colors.iconSubtle,
-            )
-        },
-        label = label,
-        onClick = onClick,
-        modifier = modifier,
-        danger = danger,
-        description = description,
-    )
-}
-
-/** [SheetAction] with an icon Qeetrix for Android doesn't have yet ([AppIconName]). */
-@Composable
-fun SheetAction(
-    icon: AppIconName,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    danger: Boolean = false,
-    description: String? = null,
-) {
-    val colors = QeetrixTheme.colors
-    SheetAction(
-        leading = {
-            AppIcon(icon, contentDescription = null, size = QeetrixSize.IconMd, tint = if (danger) colors.textDanger else colors.iconSubtle)
-        },
-        label = label,
-        onClick = onClick,
-        modifier = modifier,
-        danger = danger,
-        description = description,
-    )
-}
-
-@Composable
-private fun SheetAction(
-    leading: @Composable () -> Unit,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier,
-    danger: Boolean,
-    description: String?,
-) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .heightIn(min = QeetrixAccessibility.MinimumTouchTarget)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(vertical = QeetrixSpace.InsetMd),
-        horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        leading()
-        Column {
-            QeetrixText(label, tone = if (danger) QeetrixTextTone.Danger else null)
-            if (description != null) QeetrixText(description, size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
-        }
-    }
-}
-
-/** A centred column for a state that fills the screen (empty, done, error). */
-@Composable
-fun CentredState(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Column(
-        modifier.fillMaxSize().padding(QeetrixSpace.InsetLg),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        content = content,
-    )
-}

@@ -105,7 +105,7 @@ Android Lint and ktlint, all with warnings as errors. CI (`ci.yml`) runs it on p
 |---|---|
 | **No Firebase project yet** | Real push needs the owner's Firebase project, `app/google-services.json` and the server's FCM service account. Until then requests arrive by the pending check |
 | **A wiped app stays registered** | An app deleted without unlinking stays on the account until the credential expires (180 days) or the person removes it in Qeet ID |
-| **Icons** | Qeetrix for Android 0.1.0 lacks key, shield-check/x, scan-line, link, lock-open, timer, hourglass, bell-off and wifi-off; the nearest Qeetrix icons stand in |
+| **Icons** | Qeetrix for Android 0.2.0 lacks bell-ring, bot-off, download, globe, laptop, monitor, rotate-ccw and shield-alert; `scripts/generate-app-icons.py` generates them from `@qeetrix/icons`' sharp SVGs into `ui/AppIcons.kt` |
 | **No release workflow** | No Play Store or signing workflow yet; release signing reads a local `keystore.properties` |
 
 ## Documentation authority

@@ -36,14 +36,6 @@ class AppIconPath(
 enum class AppIconName(
     val paths: List<AppIconPath>,
 ) {
-    ArrowLeftRight(
-        listOf(
-            AppIconPath("M8 3 4 7l4 4", fill = false),
-            AppIconPath("M5 7H20", fill = false),
-            AppIconPath("m16 21 4-4-4-4", fill = false),
-            AppIconPath("M19 17H4", fill = false),
-        ),
-    ),
     BellRing(
         listOf(
             AppIconPath("M10.268 21a2 2 0 0 0 3.464 0", fill = false),
@@ -66,41 +58,11 @@ enum class AppIconName(
             AppIconPath("M9.67 4H12v2.33", fill = false),
         ),
     ),
-    ClipboardPaste(
-        listOf(
-            AppIconPath("M11 14H20", fill = false),
-            AppIconPath("M16 4H20V7.344", fill = false),
-            AppIconPath("m17 18 4-4-4-4", fill = false),
-            AppIconPath("M8 4H4V22H19.242", fill = false),
-            AppIconPath("M8 2h8v4h-8Z", fill = false),
-        ),
-    ),
-    ClockAlert(
-        listOf(
-            AppIconPath("M12 6v6l4 2", fill = false),
-            AppIconPath("M20 12v5", fill = false),
-            AppIconPath("M20 21h.01", fill = false),
-            AppIconPath("M21.25 8.2A10 10 0 1 0 16 21.16", fill = false),
-        ),
-    ),
     Download(
         listOf(
             AppIconPath("M12 14V3", fill = false),
             AppIconPath("M21 15V21H3V15", fill = false),
             AppIconPath("m7 10 5 5 5-5", fill = false),
-        ),
-    ),
-    FingerprintPattern(
-        listOf(
-            AppIconPath("M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4", fill = false),
-            AppIconPath("M14 13.12C14 15.413 14 19.21 13.106 21.72", fill = false),
-            AppIconPath("M17.29 21.02c.12-.6.43-2.3.5-3.02", fill = false),
-            AppIconPath("M2 12a10 10 0 0 1 18-6", fill = false),
-            AppIconPath("M2 16h.01", fill = false),
-            AppIconPath("M21.8 16c.2-2 .131-5.354 0-6", fill = false),
-            AppIconPath("M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2", fill = false),
-            AppIconPath("M8.734 21.739C8.921 21.166 9.116 20.59 9.22 20", fill = false),
-            AppIconPath("M9 6.8a6 6 0 0 1 9 5.2v2", fill = false),
         ),
     ),
     Globe(
@@ -110,37 +72,10 @@ enum class AppIconName(
             AppIconPath("M3 12H21", fill = false),
         ),
     ),
-    Hash(
-        listOf(
-            AppIconPath("M4 9L20 9", fill = false),
-            AppIconPath("M4 15L20 15", fill = false),
-            AppIconPath("M10 3L8 21", fill = false),
-            AppIconPath("M16 3L14 21", fill = false),
-        ),
-    ),
-    KeyRound(
-        listOf(
-            AppIconPath("M2 22H7V19H10V16H12L13.4 14.6A6.5 6.5 0 1 0 9.4 10.6L2 18Z", fill = false),
-            AppIconPath("M16 7h1v1h-1Z", fill = true),
-        ),
-    ),
     Laptop(
         listOf(
             AppIconPath("M20 16.001L21.538 20H2.462L4 16.001V5H20Z", fill = false),
             AppIconPath("M19.054 15.987H4.946", fill = false),
-        ),
-    ),
-    Link(
-        listOf(
-            AppIconPath("M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", fill = false),
-            AppIconPath("M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", fill = false),
-        ),
-    ),
-    LogOut(
-        listOf(
-            AppIconPath("m16 17 5-5-5-5", fill = false),
-            AppIconPath("M20 12H9", fill = false),
-            AppIconPath("M9 21H3V3H9", fill = false),
         ),
     ),
     Monitor(
@@ -150,37 +85,10 @@ enum class AppIconName(
             AppIconPath("M12 17L12 21", fill = false),
         ),
     ),
-    QrCode(
-        listOf(
-            AppIconPath("M3 3h5v5h-5Z", fill = false),
-            AppIconPath("M16 3h5v5h-5Z", fill = false),
-            AppIconPath("M3 16h5v5h-5Z", fill = false),
-            AppIconPath("M21 16H16V21", fill = false),
-            AppIconPath("M21 21v.01", fill = false),
-            AppIconPath("M12 7V12H7", fill = false),
-            AppIconPath("M3 12h.01", fill = false),
-            AppIconPath("M12 3h.01", fill = false),
-            AppIconPath("M12 16v.01", fill = false),
-            AppIconPath("M16 12h1", fill = false),
-            AppIconPath("M21 12v.01", fill = false),
-            AppIconPath("M12 21v-1", fill = false),
-        ),
-    ),
     RotateCcw(
         listOf(
             AppIconPath("M3 12A9 9 0 1 0 12 3A9.75 9.75 0 0 0 5.26 5.74L3.707 7.293", fill = false),
             AppIconPath("M3 3v5h5", fill = false),
-        ),
-    ),
-    ScanFace(
-        listOf(
-            AppIconPath("M3 7V3H7", fill = false),
-            AppIconPath("M17 3H21V7", fill = false),
-            AppIconPath("M21 17V21H17", fill = false),
-            AppIconPath("M7 21H3V17", fill = false),
-            AppIconPath("M8 14s1.5 2 4 2 4-2 4-2", fill = false),
-            AppIconPath("M9 9h.01", fill = false),
-            AppIconPath("M15 9h.01", fill = false),
         ),
     ),
     ShieldAlert(
@@ -191,39 +99,6 @@ enum class AppIconName(
             ),
             AppIconPath("M12 8v4", fill = false),
             AppIconPath("M12 16h.01", fill = false),
-        ),
-    ),
-    ShieldCheck(
-        listOf(
-            AppIconPath(
-                "M4 13V5H5C7 5 9.5 3.8 11.24 2.28L11.665 1.917H12.335L12.76 2.28C14.51 3.81 17 5 19 5H20V13C20 18 16.5 20.5 12.34 21.95L12.136 22.019L11.872 22.015L11.67 21.94C7.5 20.5 4 18 4 13Z",
-                fill = false,
-            ),
-            AppIconPath("m9 12 2 2 4-4", fill = false),
-        ),
-    ),
-    Smartphone(
-        listOf(
-            AppIconPath("M5 2h14v20h-14Z", fill = false),
-            AppIconPath("M12 18h.01", fill = false),
-        ),
-    ),
-    Sparkles(
-        listOf(
-            AppIconPath(
-                "M14.287 9.713L22.002 11.171V12.829L14.287 14.287L12.829 22.002H11.171L9.713 14.287L1.998 12.829V11.171L9.713 9.713L11.171 1.998H12.829Z",
-                fill = false,
-            ),
-            AppIconPath("M20 2v4", fill = false),
-            AppIconPath("M22 4h-4", fill = false),
-            AppIconPath("M2 20a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z", fill = false),
-        ),
-    ),
-    SquareArrowOutUpRight(
-        listOf(
-            AppIconPath("M21 13V21H3V3H11", fill = false),
-            AppIconPath("M20.293 3.707L12 12", fill = false),
-            AppIconPath("M15 3h6v6", fill = false),
         ),
     ),
 }

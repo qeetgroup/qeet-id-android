@@ -55,6 +55,7 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.components.drawer.QeetrixBottomSheet
 import com.qeetgroup.qeetrix.components.emptystate.QeetrixEmptyState
+import com.qeetgroup.qeetrix.components.emptystate.QeetrixEmptyStateTone
 import com.qeetgroup.qeetrix.components.input.QeetrixTextField
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextSize
@@ -101,6 +102,7 @@ fun AdminRequestsRoute(navController: NavHostController) {
                         stringResource(R.string.admin_requests_none),
                         icon = QeetrixIconName.CircleCheck,
                         description = stringResource(R.string.admin_requests_none_body),
+                        tone = QeetrixEmptyStateTone.Success,
                     )
                 } else {
                     SettingsGroup(stringResource(R.string.admin_requests_list)) {

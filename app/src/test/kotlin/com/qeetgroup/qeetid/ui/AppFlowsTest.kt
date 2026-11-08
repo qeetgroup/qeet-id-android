@@ -180,7 +180,8 @@ class AppFlowsTest {
         textFields()[2].performTextInput("jbsw y3dp ehpk 3pxp")
         compose.onNodeWithText("Add account").performClick()
         waitFor("Razorpay added")
-        compose.onNodeWithText("accounts@brightleaffoods.in").assertExists()
+        // The toast can show a frame before the list has the new row.
+        waitFor("accounts@brightleaffoods.in")
         assertEquals(
             "Razorpay",
             container.accounts.accounts.value!!

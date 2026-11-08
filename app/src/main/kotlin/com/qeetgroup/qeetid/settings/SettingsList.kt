@@ -113,7 +113,7 @@ fun SettingsRow(
         end?.invoke()
         if (onClick != null && !danger) {
             if (external) {
-                AppIcon(AppIconName.SquareArrowOutUpRight, null, size = QeetrixSize.IconSm, tint = colors.iconSubtle)
+                QeetrixIcon(QeetrixIconName.ExternalLink, null, size = QeetrixSize.IconSm, tint = colors.iconSubtle)
             } else {
                 QeetrixIcon(
                     QeetrixIconName.ChevronRight,

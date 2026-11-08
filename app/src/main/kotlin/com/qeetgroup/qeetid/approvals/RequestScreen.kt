@@ -68,6 +68,7 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.components.otpinput.QeetrixOTPInput
+import com.qeetgroup.qeetrix.components.otpinput.QeetrixOTPSlotWidth
 import com.qeetgroup.qeetrix.components.spinner.QeetrixSpinner
 import com.qeetgroup.qeetrix.components.typography.QeetrixHeading
 import com.qeetgroup.qeetrix.components.typography.QeetrixHeadingSize
@@ -75,6 +76,7 @@ import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextWeight
+import com.qeetgroup.qeetrix.foundation.format.QeetrixFormat
 import com.qeetgroup.qeetrix.foundation.haptics.QeetrixHapticRole
 import com.qeetgroup.qeetrix.foundation.haptics.rememberQeetrixHaptics
 import com.qeetgroup.qeetrix.foundation.shape.QeetrixShapes
@@ -84,6 +86,7 @@ import com.qeetgroup.qeetrix.icons.QeetrixIcon
 import com.qeetgroup.qeetrix.icons.QeetrixIconName
 import com.qeetgroup.qeetrix.theme.QeetrixTheme
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.util.Date
 import java.util.Locale
 
@@ -196,7 +199,7 @@ fun RequestScreen(
                 title = stringResource(R.string.request_answered_title),
                 body = stringResource(R.string.request_answered_body),
                 sealTone = SealTone.Brand,
-                seal = { AppIcon(AppIconName.Smartphone, null, Modifier.fillMaxSize()) },
+                seal = { QeetrixIcon(QeetrixIconName.Smartphone, null, Modifier.fillMaxSize()) },
                 actions = { DoneButton(onClose) },
             ) { RequestDetails(state.request, withPlace = false) }
         }
@@ -345,10 +348,11 @@ private fun ReviewPage(
                 length = NUMBER_LENGTH,
                 hideLabel = true,
                 smsCodeAutofill = false,
+                slotWidth = QeetrixOTPSlotWidth.Square,
                 enabled = !state.sending,
                 modifier =
                     Modifier
-                        // Two square slots, wider as the text grows.
+                        // Two square slots, centred, wider as the text grows.
                         .width((QeetrixTheme.density.sizeControlLg * NUMBER_LENGTH + QeetrixSpace.GapSm) * fontScale)
                         .focusRequester(focus)
                         .testTag("request-number"),
@@ -416,7 +420,7 @@ private data class RequestFacts(
 private fun requestFacts(request: SignInRequest): RequestFacts {
     val context = LocalContext.current
     val at = RequestViewModel.requestedAtMillis(request)
-    val time = at?.let { DateFormat.getTimeFormat(context).format(Date(it)) }
+    val time = at?.let { QeetrixFormat.time(Instant.ofEpochMilli(it), hour24 = DateFormat.is24HourFormat(context)) }
     val today = stringResource(R.string.request_today_at, time.orEmpty())
     return RequestFacts(
         browser = browserOf(request),
@@ -529,7 +533,7 @@ internal fun DeniedResult(
         },
     ) {
         details()
-        ResultNote(AppIconName.KeyRound, stringResource(R.string.request_denied_next), warning = true)
+        ResultNote(QeetrixIconName.KeyRound, stringResource(R.string.request_denied_next), warning = true)
     }
 }
 

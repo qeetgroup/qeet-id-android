@@ -138,9 +138,8 @@ class AccountsViewModel(
         messages.trySend(AccountsMessage.Copied)
     }
 
-    /** The code's own tap copied it (Qeetrix's code copies, marked sensitive): clear it later, and say so. */
-    fun copied(code: String) {
-        container.clipboard.clearLater(code)
+    /** The code's own tap copied it (Qeetrix's code copies, marked sensitive, and clears it 30 s later): say so. */
+    fun copied() {
         messages.trySend(AccountsMessage.Copied)
     }
 

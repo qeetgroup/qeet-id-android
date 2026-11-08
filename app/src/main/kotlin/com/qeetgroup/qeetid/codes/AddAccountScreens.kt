@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -72,6 +74,7 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.components.button.QeetrixIconButton
 import com.qeetgroup.qeetrix.components.input.QeetrixOption
 import com.qeetgroup.qeetrix.components.input.QeetrixTextField
+import com.qeetgroup.qeetrix.components.list.QeetrixListItemIcon
 import com.qeetgroup.qeetrix.components.navigation.QeetrixBackButton
 import com.qeetgroup.qeetrix.components.navigation.QeetrixTopAppBar
 import com.qeetgroup.qeetrix.components.segmented.QeetrixSegmentedControl
@@ -156,6 +159,8 @@ fun ScanAccountRoute(navController: NavHostController) {
         Box(Modifier.weight(1f).fillMaxWidth()) {
             QrScanner(
                 guidance = stringResource(R.string.scan_account_guidance),
+                enterKeyLabel = stringResource(R.string.accounts_type_key),
+                deniedDescription = stringResource(R.string.scan_camera_off_body),
                 onEnterKey = { navController.navigate(TypeKey) { popUpTo(ScanAccount) { inclusive = true } } },
                 paused = problem != null || found != null || already != null,
                 modifier = Modifier.fillMaxSize(),
@@ -206,7 +211,7 @@ fun ScanAccountRoute(navController: NavHostController) {
                     ScanPanel(
                         title = stringResource(R.string.scan_found),
                         body = listOf(issuer, label).filter { it.isNotBlank() }.joinToString(" · "),
-                        leading = { LetterTile(initialOf(issuer)) },
+                        leading = { QeetrixListItemIcon(initialOf(issuer)) },
                     ) {
                         QeetrixButton(
                             stringResource(R.string.scan_again),
@@ -397,6 +402,7 @@ fun TypeKeyRoute(navController: NavHostController) {
             QeetrixTextField(
                 key,
                 stringResource(R.string.type_key_key),
+                mono = true,
                 placeholder = stringResource(R.string.type_key_key_placeholder),
                 description = stringResource(R.string.type_key_key_help),
                 error = if (wrongCharacter) stringResource(R.string.type_key_key_invalid) else keyError?.let { stringResource(it) },
@@ -419,44 +425,48 @@ fun TypeKeyRoute(navController: NavHostController) {
                     ),
                 onKeyboardAction = { submit() },
             )
+            // Code settings stay closed: almost every site uses 6 digits, every 30 s and SHA-1. The closed row says
+            // what's set; each setting is a row with its name and a small segmented choice at the end.
             QeetrixAccordion(value = advanced, onValueChange = { advanced = it }) {
-                QeetrixAccordionItem(ADVANCED, stringResource(R.string.type_key_advanced)) {
-                    Column(verticalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd)) {
+                QeetrixAccordionItem(
+                    ADVANCED,
+                    stringResource(R.string.type_key_advanced),
+                    description =
+                        stringResource(
+                            R.string.type_key_summary,
+                            pluralStringResource(R.plurals.type_key_digits_count, digits, digits),
+                            pluralStringResource(R.plurals.type_key_every_seconds, period, period),
+                            algorithmLabel(algorithm),
+                        ),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         QeetrixText(
-                            stringResource(
-                                R.string.type_key_summary,
-                                pluralStringResource(R.plurals.type_key_digits_count, digits, digits),
-                                pluralStringResource(R.plurals.type_key_every_seconds, period, period),
-                                algorithmLabel(algorithm),
-                            ),
+                            stringResource(R.string.type_key_settings_note),
                             size = QeetrixTextSize.Sm,
                             tone = QeetrixTextTone.Subtle,
                         )
-                        Labelled(stringResource(R.string.type_key_digits)) {
+                        Setting(stringResource(R.string.type_key_digits)) {
                             QeetrixSegmentedControl(
                                 digits,
                                 { digits = it },
                                 listOf(QeetrixOption(6, "6"), QeetrixOption(8, "8")),
-                                Modifier.fillMaxWidth(),
+                                size = QeetrixButtonSize.Sm,
                             )
                         }
-                        Labelled(stringResource(R.string.type_key_period)) {
+                        Setting(stringResource(R.string.type_key_period)) {
                             QeetrixSegmentedControl(
                                 period,
                                 { period = it },
-                                listOf(
-                                    QeetrixOption(30, stringResource(R.string.period_30)),
-                                    QeetrixOption(60, stringResource(R.string.period_60)),
-                                ),
-                                Modifier.fillMaxWidth(),
+                                listOf(30, 60).map { QeetrixOption(it, stringResource(R.string.type_key_seconds, it)) },
+                                size = QeetrixButtonSize.Sm,
                             )
                         }
-                        Labelled(stringResource(R.string.type_key_algorithm)) {
+                        Setting(stringResource(R.string.type_key_algorithm)) {
                             QeetrixSegmentedControl(
                                 algorithm,
                                 { algorithm = it },
                                 TotpAlgorithm.entries.map { QeetrixOption(it, algorithmLabel(it)) },
-                                Modifier.fillMaxWidth(),
+                                size = QeetrixButtonSize.Sm,
                             )
                         }
                     }
@@ -466,14 +476,24 @@ fun TypeKeyRoute(navController: NavHostController) {
     }
 }
 
+/**
+ * One code setting: its name at the start and its segmented choice at the end of the row, at its own width; under the
+ * name when they don't fit side by side (large text).
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Labelled(
+private fun Setting(
     label: String,
-    content: @Composable () -> Unit,
+    choice: @Composable () -> Unit,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(QeetrixSpace.GapXs)) {
-        QeetrixText(label, size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
-        content()
+    FlowRow(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm),
+        itemVerticalAlignment = Alignment.CenterVertically,
+    ) {
+        QeetrixText(label, modifier = Modifier.padding(end = QeetrixSpace.GapLg))
+        choice()
     }
 }
 
