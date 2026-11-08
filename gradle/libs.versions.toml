@@ -25,7 +25,7 @@ ktlint-gradle = "14.2.0"
 ktlint-engine = "1.8.0"
 
 [libraries]
-qeetrix = { group = "com.qeetgroup", name = "qeetrix", version = "0.2.0" }
+qeetrix = { group = "com.qeetgroup", name = "qeetrix", version = "0.3.0" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 compose-ui = { group = "androidx.compose.ui", name = "ui" }

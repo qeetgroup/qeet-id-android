@@ -21,6 +21,7 @@ import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -297,6 +298,8 @@ class ApprovalsTest {
         runBlocking { container.inbox.checkPending().join() }
         assertNull(runBlocking { container.links.get() })
         assertEquals(1, push.stopped)
+        // Accounts says so, with Link again, until the phone is linked again.
+        assertTrue(container.preferences.unlinkedByQeetId.value)
     }
 
     @Test
@@ -393,5 +396,7 @@ class ApprovalsTest {
         model.unlink()
         assertEquals(UnlinkOutcome.AlreadyRemoved, model.unlinkOutcomes.awaitFirst())
         assertNull(runBlocking { container.links.get() })
+        // The person unlinked it here: no "unlinked from Qeet ID" alert.
+        assertFalse(container.preferences.unlinkedByQeetId.value)
     }
 }

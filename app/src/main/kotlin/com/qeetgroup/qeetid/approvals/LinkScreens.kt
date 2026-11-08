@@ -48,8 +48,6 @@ import com.qeetgroup.qeetid.scanner.QrScanner
 import com.qeetgroup.qeetid.scanner.ScanPanel
 import com.qeetgroup.qeetid.system.DeviceInfo
 import com.qeetgroup.qeetid.ui.Accounts
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.BrandMark
 import com.qeetgroup.qeetid.ui.Fact
 import com.qeetgroup.qeetid.ui.LetterTile
@@ -68,6 +66,7 @@ import com.qeetgroup.qeetid.ui.ScreenBar
 import com.qeetgroup.qeetid.ui.ScrollingPage
 import com.qeetgroup.qeetid.ui.SealTone
 import com.qeetgroup.qeetid.ui.Settings
+import com.qeetgroup.qeetid.ui.barArrangement
 import com.qeetgroup.qeetid.ui.brandPanel
 import com.qeetgroup.qeetid.ui.deviceWord
 import com.qeetgroup.qeetid.ui.isShort
@@ -156,6 +155,7 @@ fun LinkPhoneRoute(navController: NavHostController) {
 
     ScrollingPage(
         topBar = { ScreenBar(stringResource(R.string.link_title, device), onBack = { navController.popBackStack() }) },
+        arrangement = barArrangement(stringResource(R.string.link_type), stringResource(R.string.link_scan)),
         actions = {
             QeetrixButton(
                 stringResource(R.string.link_type),
@@ -170,6 +170,7 @@ fun LinkPhoneRoute(navController: NavHostController) {
                 stringResource(R.string.link_scan),
                 onClick = { navController.navigate(ScanPairing) },
                 size = QeetrixButtonSize.Lg,
+                icon = QeetrixIconName.QrCode,
                 enabled = canLink,
                 fullWidth = true,
             )
@@ -381,6 +382,7 @@ fun NamePhoneRoute(
                     stringResource(R.string.link_scan_new),
                     onClick = { navController.navigate(ScanPairing) { popUpTo(Accounts) } },
                     size = QeetrixButtonSize.Lg,
+                    icon = QeetrixIconName.QrCode,
                     fullWidth = true,
                 )
             } else {
@@ -501,8 +503,8 @@ fun PhoneLinkedRoute(navController: NavHostController) {
             Spacer(Modifier.height(QeetrixSpace.InsetLg))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm)) {
-            AppIcon(
-                AppIconName.BellRing,
+            QeetrixIcon(
+                QeetrixIconName.BellRing,
                 null,
                 Modifier.padding(top = 2.dp),
                 size = QeetrixSize.IconSm,

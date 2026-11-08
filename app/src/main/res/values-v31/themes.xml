@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Android 12 and later draw Launch with the system splash screen, as the mockup says: the 128 dp round mark with
+         its entrance (no icon background, so no second circle), "from Qeet Group" as the branding image 60 dp from the
+         bottom, on color.surface.canvas in light and dark. It never waits for anything: it goes once Compose draws. -->
+    <style name="Theme.QeetId" parent="Base.Theme.QeetId">
+        <item name="android:windowBackground">@color/launch_canvas</item>
+        <item name="android:windowSplashScreenBackground">@color/launch_canvas</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/launch_mark_animated</item>
+        <item name="android:windowSplashScreenAnimationDuration">300</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/launch_branding</item>
+    </style>
+</resources>

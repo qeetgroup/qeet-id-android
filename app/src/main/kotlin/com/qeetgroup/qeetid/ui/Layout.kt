@@ -100,6 +100,7 @@ fun ScreenBar(
 fun ScrollingPage(
     topBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    arrangement: QeetrixBottomActionBarArrangement = QeetrixBottomActionBarArrangement.PrimaryFills,
     actions: (@Composable () -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -108,11 +109,11 @@ fun ScrollingPage(
     Screen(
         modifier = modifier,
         topBar = topBar,
-        // Two actions as the mockups draw Android's bar: the quiet one at its own width at the start, the primary filling
-        // the rest.
+        // Two actions as the mockups draw Android's bar: the quiet one at its own width at the start and the primary
+        // filling the rest, or stacked when their labels are long ([barArrangement]).
         bottomBar = {
             if (actions != null) {
-                QeetrixBottomActionBar(scroll = scroll, arrangement = QeetrixBottomActionBarArrangement.PrimaryFills, content = actions)
+                QeetrixBottomActionBar(scroll = scroll, arrangement = arrangement, content = actions)
             }
         },
     ) {
@@ -137,6 +138,21 @@ fun ScrollingPage(
         }
     }
 }
+
+/**
+ * How the mockups lay out Android's bar of two actions: side by side (the quiet one at its own width, the primary filling
+ * the rest) while both labels fit at 360 dp, about 22 characters together; stacked, the primary full width on top and
+ * the quiet one centred under it, when they don't. A tablet keeps them side by side.
+ */
+@Composable
+fun barArrangement(vararg labels: String): QeetrixBottomActionBarArrangement =
+    if (!isTablet() && labels.sumOf { it.length } > BAR_LABELS_IN_A_ROW) {
+        QeetrixBottomActionBarArrangement.Stacked
+    } else {
+        QeetrixBottomActionBarArrangement.PrimaryFills
+    }
+
+private const val BAR_LABELS_IN_A_ROW = 22
 
 /** A heading and its line, the way the mockups open a page. */
 @Composable
@@ -266,13 +282,14 @@ fun ResultPage(
     sealTone: SealTone,
     seal: @Composable () -> Unit,
     actions: @Composable () -> Unit,
+    arrangement: QeetrixBottomActionBarArrangement = QeetrixBottomActionBarArrangement.PrimaryFills,
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
     val short = isShort()
     val tablet = isTablet()
     val scroll = rememberScrollState()
     Screen(bottomBar = {
-        QeetrixBottomActionBar(scroll = scroll, arrangement = QeetrixBottomActionBarArrangement.PrimaryFills, content = actions)
+        QeetrixBottomActionBar(scroll = scroll, arrangement = arrangement, content = actions)
     }) {
         Column(
             Modifier
@@ -344,26 +361,6 @@ fun ResultDetails(
 }
 
 /** What happens next, or what to do, with an icon at its start: brand, or amber when it's a warning. */
-@Composable
-fun ResultNote(
-    icon: AppIconName,
-    text: String,
-    warning: Boolean = false,
-) {
-    val colors = QeetrixTheme.colors
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm)) {
-        AppIcon(
-            icon,
-            null,
-            Modifier.padding(top = 2.dp),
-            size = QeetrixSize.IconSm,
-            tint = if (warning) colors.iconWarning else colors.iconBrand,
-        )
-        QeetrixText(text, size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
-    }
-}
-
-/** [ResultNote] with one of Qeetrix's own icons. */
 @Composable
 fun ResultNote(
     icon: QeetrixIconName,

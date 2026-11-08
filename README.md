@@ -8,7 +8,7 @@ Qeet ID sign-ins from your phone.**
 [![Android](https://img.shields.io/badge/Android-10%2B%20(API%2029)-3DDC84?logo=android&logoColor=white)](#-building)
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.4.21-7F52FF?logo=kotlin&logoColor=white)](#-stack)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-1.12-4285F4?logo=jetpackcompose&logoColor=white)](#-stack)
-[![Qeetrix](https://img.shields.io/badge/Qeetrix%20for%20Android-0.2.0-D04800)](https://github.com/qeetgroup/qeetrix-android)
+[![Qeetrix](https://img.shields.io/badge/Qeetrix%20for%20Android-0.3.0-D04800)](https://github.com/qeetgroup/qeetrix-android)
 [![Firebase](https://img.shields.io/badge/push-Firebase%20Cloud%20Messaging-FFCA28?logo=firebase&logoColor=black)](docs/firebase.md)
 
 [🧭 Architecture](docs/llm/architecture-map.md) · [🔒 Security](SECURITY.md) · [🔥 Firebase](docs/firebase.md) · [📝 Changelog](CHANGELOG.md) · [🤖 Agents](AGENTS.md)
@@ -55,7 +55,7 @@ comes to the foreground.
 | | |
 |:--|:--|
 | 🤖 Platform | Android 10 (API 29) and later; compile and target SDK 37 |
-| 🎨 UI | Jetpack Compose and [Qeetrix for Android](https://github.com/qeetgroup/qeetrix-android) 0.2.0, from source |
+| 🎨 UI | Jetpack Compose and [Qeetrix for Android](https://github.com/qeetgroup/qeetrix-android) 0.3.0, from source |
 | 🧭 Navigation | Navigation Compose with type-safe routes; ViewModel + StateFlow; manual dependency injection |
 | 🔐 Secrets | Android Keystore AES-256-GCM, one sealed file per account secret, in the no-backup directory |
 | 👆 Verification | AndroidX Biometric (`BiometricPrompt`: strong biometric or the screen lock) |
@@ -75,7 +75,7 @@ scripts/fetch-qeetrix.sh                                       # Qeetrix for And
 ```
 
 Qeetrix for Android is built from source in the same Gradle run (a composite build of
-[`qeetrix-android`](https://github.com/qeetgroup/qeetrix-android) pinned to `v0.2.0` and its commit, in
+[`qeetrix-android`](https://github.com/qeetgroup/qeetrix-android) pinned to `v0.3.0` and its commit, in
 `gradle.properties`), so no GitHub Packages token is needed. To work on the library beside the app, set
 `qeetrix.dir=../../qeetrix/qeetrix-android` in `local.properties`.
 

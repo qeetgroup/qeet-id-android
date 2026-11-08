@@ -57,9 +57,13 @@ class AppContainer(
             onLock = accounts::forgetSecrets,
         )
 
-    val pushSync = PushTokenSync(links, api, pushTokens, scope)
+    val pushSync = PushTokenSync(links, api, pushTokens, scope, onUnlinkedByServer = { preferences.setUnlinkedByQeetId(true) })
 
-    val inbox = RequestInbox(links, api, scope, onUnlinkedByServer = pushTokens::stop)
+    val inbox =
+        RequestInbox(links, api, scope, onUnlinkedByServer = {
+            pushTokens.stop()
+            preferences.setUnlinkedByQeetId(true)
+        })
 
     /** An administrator's own session, for the administration screens; separate from the phone's link. */
     val admin = AdminSession(adminFiles, AdminApi(api.baseUrl, api.client, api.userAgent))

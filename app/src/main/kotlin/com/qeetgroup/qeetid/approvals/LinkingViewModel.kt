@@ -86,6 +86,7 @@ class LinkingViewModel(
                                 pushTokenHash = PushTokenSync.hash(token),
                             ),
                         )
+                        container.preferences.setUnlinkedByQeetId(false)
                         LinkingState(linked = true)
                     }
 

@@ -34,8 +34,6 @@ import com.qeetgroup.qeetid.ui.AdminOrganizations
 import com.qeetgroup.qeetid.ui.AdminPeople
 import com.qeetgroup.qeetid.ui.AdminRequests
 import com.qeetgroup.qeetid.ui.AdminSignIn
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.Fact
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.LocalPasskeys
@@ -57,6 +55,7 @@ import com.qeetgroup.qeetrix.components.button.QeetrixButton
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
+import com.qeetgroup.qeetrix.components.button.QeetrixIconButton
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
@@ -126,6 +125,7 @@ fun AdminSignInRoute(navController: NavHostController) {
                 stringResource(R.string.admin_sign_in),
                 onClick = ::signIn,
                 size = QeetrixButtonSize.Lg,
+                icon = QeetrixIconName.KeyRound,
                 loading = busy,
                 fullWidth = true,
             )
@@ -293,12 +293,10 @@ fun AdminHomeRoute(navController: NavHostController) {
                 onBack = { navController.popBackStack() },
                 description = stringResource(R.string.admin_title),
                 actions = {
-                    QeetrixButton(
+                    QeetrixIconButton(
+                        QeetrixIconName.ArrowLeftRight,
                         stringResource(R.string.admin_switch),
                         onClick = { navController.navigate(AdminOrganizations) },
-                        variant = QeetrixButtonVariant.Ghost,
-                        size = QeetrixButtonSize.Sm,
-                        modifier = Modifier.padding(end = QeetrixSpace.InsetSm),
                     )
                 },
             )

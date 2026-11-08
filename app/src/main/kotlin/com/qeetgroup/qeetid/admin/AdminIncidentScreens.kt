@@ -29,8 +29,6 @@ import com.qeetgroup.qeetid.settings.SettingsRow
 import com.qeetgroup.qeetid.settings.SettingsRule
 import com.qeetgroup.qeetid.ui.AdminEventRoute
 import com.qeetgroup.qeetid.ui.AdminSuspend
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.Fact
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.LocalUserVerification
@@ -44,6 +42,7 @@ import com.qeetgroup.qeetid.ui.ScreenBar
 import com.qeetgroup.qeetid.ui.ScrollingPage
 import com.qeetgroup.qeetid.ui.SealTone
 import com.qeetgroup.qeetid.ui.StopFact
+import com.qeetgroup.qeetid.ui.barArrangement
 import com.qeetgroup.qeetid.ui.isShort
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlert
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlertTone
@@ -60,6 +59,7 @@ import com.qeetgroup.qeetrix.components.typography.QeetrixHeadingSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
+import com.qeetgroup.qeetrix.icons.QeetrixIcon
 import com.qeetgroup.qeetrix.icons.QeetrixIconName
 import kotlinx.coroutines.launch
 
@@ -101,7 +101,7 @@ fun AdminAgentsRoute(navController: NavHostController) {
             title = stringResource(R.string.admin_agents_stopped),
             body = pluralStringResource(R.plurals.admin_agents_stopped_body, count, count),
             sealTone = SealTone.Danger,
-            seal = { AppIcon(AppIconName.BotOff, null, Modifier.fillMaxSize()) },
+            seal = { QeetrixIcon(QeetrixIconName.BotOff, null, Modifier.fillMaxSize()) },
             actions = {
                 QeetrixButton(stringResource(R.string.action_done), onClick = {
                     navController.popBackStack()
@@ -189,7 +189,7 @@ fun AdminAgentsRoute(navController: NavHostController) {
                 if (short) RingsSize.Xs else RingsSize.Sm,
                 modifier = Modifier.fillMaxWidth().wrapContentWidth(Alignment.CenterHorizontally),
                 sealTone = SealTone.Danger,
-                seal = { AppIcon(AppIconName.BotOff, null, Modifier.fillMaxSize()) },
+                seal = { QeetrixIcon(QeetrixIconName.BotOff, null, Modifier.fillMaxSize()) },
             )
             Spacer(Modifier.height(if (short) QeetrixSpace.GapMd else 20.dp))
             if (count == 0) {
@@ -285,9 +285,17 @@ fun AdminEventScreenRoute(
     val state by loader.state.collectAsStateWithLifecycle()
     val event = (state as? AdminResult.Ok)?.value
     val console = consoleBase(container.api.baseUrl)
+    val suspendLabel =
+        event
+            ?.actorEmail
+            ?.takeIf {
+                event.personId != null
+            }?.let { stringResource(R.string.admin_suspend_action, firstName(it)) }
+    val consoleLabel = stringResource(R.string.admin_open_console)
 
     ScrollingPage(
         topBar = { ScreenBar(stringResource(R.string.admin_event_title), onBack = { navController.popBackStack() }) },
+        arrangement = barArrangement(suspendLabel.orEmpty(), consoleLabel),
         actions = {
             if (event != null) {
                 val person = event.personId
@@ -302,7 +310,7 @@ fun AdminEventScreenRoute(
                     )
                 }
                 QeetrixButton(
-                    stringResource(R.string.admin_open_console),
+                    consoleLabel,
                     onClick = {
                         val path =
                             if (event.source ==

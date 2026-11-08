@@ -34,6 +34,9 @@ class MainActivity : FragmentActivity() {
         val verification = BiometricUserVerification(this)
         val passkeys = CredentialManagerPasskeys(this)
         setContent { QeetIdApp(container, verification, passkeys) }
+        // Android 10 and 11 show Launch as the window's background (launch_screen); once the app draws, the window is
+        // the plain canvas again, so the icon never shows through behind a screen.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) window.setBackgroundDrawableResource(R.color.launch_canvas)
     }
 
     override fun onNewIntent(intent: Intent) {

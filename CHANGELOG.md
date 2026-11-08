@@ -22,9 +22,14 @@ All notable changes to Qeet ID for Android are documented here. The format follo
 - **Settings**: the linked account and whether requests reach it, unlinking, app lock, hidden codes, about and help.
 - **Protection**: secrets sealed by an Android Keystore AES-256-GCM key, kept out of backups and device transfer;
   screens kept out of screenshots and the recent-apps preview; other apps' overlays hidden; HTTPS only.
-- Built entirely from Qeetrix for Android 0.2.0, in light and dark: its action sheets, list rows with a live code, copy
+- Built entirely from Qeetrix for Android 0.3.0, in light and dark: its action sheets, list rows with a live code, copy
   with a countdown and auto-clear, links, monospace key fields, accordion summaries, time formatting and icons replace
-  the app's own stand-ins. Code settings (digits, period, algorithm) sit in a collapsed group that says what is set.
+  the app's own stand-ins. Every icon is the mockups' own Qeetrix icon (qr-code on the scan actions, icon-only Paste
+  and Switch organisation buttons, laptop, monitor, globe, bell-ring, bot-off, download, rotate-ccw, shield-alert); the
+  app draws none itself. Code settings (digits, period, algorithm) sit in a collapsed group that says what is set.
+- **Launch** as the mockup draws it: the 128 dp round icon with a short entrance and "from Qeet Group" at the foot,
+  in light and dark — the system splash screen on Android 12 and later, a matching window background on 10 and 11.
+  The icon is round on every screen.
 - **Administration**: an administrator signs in with their passkey (Android's Credential Manager) and gets their own
   session, kept apart from the phone's link: access requests to approve (after a fresh passkey check) or deny with a
   reason, critical events of the last day, and two emergency actions, suspend a person and stop all AI agents, each

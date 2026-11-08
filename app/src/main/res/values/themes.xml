@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- The window behind the Compose UI, until QeetrixTheme draws; Compose draws every pixel after that. Its background
-         and the launch screen's are Qeetrix's color.surface.canvas (light #FBFAF9), so Launch is the keyhole icon on
-         the page Welcome opens on, with no flash between them. -->
-    <style name="Theme.QeetId" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
-        <item name="android:windowBackground">@color/launch_canvas</item>
-        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/launch_canvas</item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/ic_launcher_foreground</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/launch_icon_background</item>
+<resources>
+    <!-- Light; values-night has the dark base. The window behind the Compose UI, until QeetrixTheme draws; Compose
+         draws every pixel after that. Its background is Qeetrix's color.surface.canvas (light #FBFAF9), so Launch
+         opens onto the page Welcome opens on, with no flash between them. -->
+    <style name="Base.Theme.QeetId" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
+
+    <!-- Android 10 and 11: the launch screen is the window's background (launch_screen), until MainActivity sets the
+         plain canvas once Compose draws. Android 12 and later: values-v31. -->
+    <style name="Theme.QeetId" parent="Base.Theme.QeetId">
+        <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 </resources>

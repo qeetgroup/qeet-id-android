@@ -42,6 +42,8 @@ data class AccountsState(
     val online: Boolean = true,
     /** The stored accounts could not be opened (the Keystore was reset) and were set aside. */
     val vaultReset: Boolean = false,
+    /** Qeet ID removed this phone's link, so requests stop; codes still work. */
+    val unlinkedByQeetId: Boolean = false,
 )
 
 /** What the screen says once, in a snackbar. */
@@ -81,13 +83,14 @@ class AccountsViewModel(
     val state: StateFlow<AccountsState> =
         combine(
             combine(accounts, query, clock) { list, q, now -> Triple(list, q, now) },
-            combine(container.links.summary, container.preferences.hideCodes, container.connectivity.online, store.unreadable) {
-                link,
-                hide,
-                online,
-                reset,
-                ->
-                Settings(link, hide, online, reset)
+            combine(
+                container.links.summary,
+                container.preferences.hideCodes,
+                container.connectivity.online,
+                store.unreadable,
+                container.preferences.unlinkedByQeetId,
+            ) { link, hide, online, reset, unlinked ->
+                Settings(link, hide, online, reset, unlinked && link == null)
             },
         ) { (list, q, now), settings ->
             val needle = q.trim()
@@ -117,6 +120,7 @@ class AccountsViewModel(
                 hideCodes = settings.hideCodes,
                 online = settings.online,
                 vaultReset = settings.vaultReset,
+                unlinkedByQeetId = settings.unlinkedByQeetId,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), AccountsState())
 
@@ -163,6 +167,7 @@ class AccountsViewModel(
         val hideCodes: Boolean,
         val online: Boolean,
         val vaultReset: Boolean,
+        val unlinkedByQeetId: Boolean,
     )
 
     private companion object {

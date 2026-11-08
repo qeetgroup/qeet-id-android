@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasSetTextAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isDialog
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
@@ -18,6 +19,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
@@ -269,8 +271,10 @@ class AppFlowsTest {
         shadowOf(context.getSystemService(NotificationManager::class.java)).setNotificationsEnabled(false)
         launch()
         waitFor("You're offline")
-        compose.onNodeWithText("Sign-in requests are off").assertExists()
-        compose.onNodeWithText("Allow notifications").assertExists()
+        compose.onNodeWithText("Sign-in requests can't reach this phone").assertExists()
+        compose.onNodeWithText("Turn on").assertExists()
+        // The problems come first; the approvals row is under them, further down the list.
+        compose.onNodeWithTag("accounts").performScrollToNode(hasText("For meera@brightleaffoods.in"))
         compose.onNodeWithText("For meera@brightleaffoods.in").assertExists()
     }
 

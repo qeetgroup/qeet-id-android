@@ -46,8 +46,6 @@ import com.qeetgroup.qeetid.data.api.PendingResult
 import com.qeetgroup.qeetid.data.api.RespondResult
 import com.qeetgroup.qeetid.data.api.SignInRequest
 import com.qeetgroup.qeetid.ui.Accounts
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.Screen
 import com.qeetgroup.qeetid.ui.ScreenBar
@@ -444,8 +442,8 @@ private fun DeviceIcon(
     tint: androidx.compose.ui.graphics.Color,
 ) {
     when (request.context.userAgent?.let { BrowserName.parts(it).system }) {
-        "macOS", "ChromeOS" -> AppIcon(AppIconName.Laptop, null, size = QeetrixSize.IconMd, tint = tint)
+        "macOS", "ChromeOS" -> QeetrixIcon(QeetrixIconName.Laptop, null, size = QeetrixSize.IconMd, tint = tint)
         "iOS", "iPadOS", "Android" -> QeetrixIcon(QeetrixIconName.Smartphone, null, size = QeetrixSize.IconMd, tint = tint)
-        else -> AppIcon(AppIconName.Monitor, null, size = QeetrixSize.IconMd, tint = tint)
+        else -> QeetrixIcon(QeetrixIconName.Monitor, null, size = QeetrixSize.IconMd, tint = tint)
     }
 }

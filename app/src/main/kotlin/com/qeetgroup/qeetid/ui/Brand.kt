@@ -25,22 +25,19 @@ import com.qeetgroup.qeetrix.theme.LocalQeetrixContentColor
 import com.qeetgroup.qeetrix.theme.QeetrixTheme
 import kotlin.math.roundToInt
 
-/** How the icon is cut: Android masks app icons to a circle; the rounded square is the master's. */
-enum class MarkShape { Round, Tile }
-
 /**
- * Qeet ID's icon inside the app: the white keyhole on the Qeet orange gradient, as on the home screen. Logo colours,
- * not UI colours, so the same in light and dark.
+ * Qeet ID's icon inside the app: the white keyhole on the Qeet orange gradient, round as Android masks the home
+ * screen icon, on every screen (the rounded square is iOS's). Logo colours, not UI colours, so the same in light and
+ * dark.
  */
 @Composable
 fun BrandMark(
     modifier: Modifier = Modifier,
     size: Dp = 56.dp,
-    shape: MarkShape = MarkShape.Round,
     contentDescription: String? = stringResource(R.string.app_mark_description),
 ) {
     Image(
-        painterResource(if (shape == MarkShape.Round) R.drawable.qeet_id_mark_round else R.drawable.qeet_id_mark_tile),
+        painterResource(R.drawable.qeet_id_mark_round),
         contentDescription = contentDescription,
         modifier = modifier.size(size),
     )

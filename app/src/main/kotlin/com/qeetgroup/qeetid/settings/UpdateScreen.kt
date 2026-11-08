@@ -13,18 +13,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import com.qeetgroup.qeetid.BuildConfig
 import com.qeetgroup.qeetid.R
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.ResultDetails
 import com.qeetgroup.qeetid.ui.ResultNote
 import com.qeetgroup.qeetid.ui.ResultPage
 import com.qeetgroup.qeetid.ui.SealTone
+import com.qeetgroup.qeetid.ui.barArrangement
 import com.qeetgroup.qeetid.ui.deviceWord
 import com.qeetgroup.qeetrix.components.button.QeetrixButton
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
+import com.qeetgroup.qeetrix.icons.QeetrixIcon
 import com.qeetgroup.qeetrix.icons.QeetrixIconName
 
 /**
@@ -39,7 +39,8 @@ fun UpdateRequiredScreen(onShowCodes: () -> Unit) {
         title = stringResource(R.string.update_title),
         body = stringResource(R.string.update_body),
         sealTone = SealTone.Brand,
-        seal = { AppIcon(AppIconName.Download, null, Modifier.fillMaxSize()) },
+        seal = { QeetrixIcon(QeetrixIconName.Download, null, Modifier.fillMaxSize()) },
+        arrangement = barArrangement(stringResource(R.string.update_show_codes), stringResource(R.string.update_play)),
         actions = {
             QeetrixButton(
                 stringResource(R.string.update_show_codes),

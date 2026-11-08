@@ -44,8 +44,6 @@ import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.lock.VerifyPrompt
 import com.qeetgroup.qeetid.lock.VerifyResult
 import com.qeetgroup.qeetid.system.NotificationAccess
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.BrandMark
 import com.qeetgroup.qeetid.ui.Fact
 import com.qeetgroup.qeetid.ui.LocalAppContainer
@@ -57,6 +55,7 @@ import com.qeetgroup.qeetid.ui.RingsSize
 import com.qeetgroup.qeetid.ui.Screen
 import com.qeetgroup.qeetid.ui.ScreenBar
 import com.qeetgroup.qeetid.ui.ScrollingPage
+import com.qeetgroup.qeetid.ui.barArrangement
 import com.qeetgroup.qeetid.ui.brandPanel
 import com.qeetgroup.qeetid.ui.deviceWord
 import com.qeetgroup.qeetid.ui.isShort
@@ -274,10 +273,17 @@ fun LockSetupScreen(
     }
     val promptTitle = stringResource(R.string.lock_on_prompt_title)
     val promptSubtitle = stringResource(R.string.lock_change_prompt_subtitle)
+    val arrangement =
+        if (secure) {
+            barArrangement(stringResource(R.string.action_not_now), stringResource(R.string.lock_use_fingerprint))
+        } else {
+            barArrangement(stringResource(R.string.action_open_settings), stringResource(R.string.lock_continue_without))
+        }
 
     Welcoming {
         ScrollingPage(
             topBar = { SetupBar(1, totalSteps, onBack) },
+            arrangement = arrangement,
             actions = {
                 if (secure) {
                     QeetrixButton(
@@ -316,6 +322,7 @@ fun LockSetupScreen(
                             }
                         },
                         size = QeetrixButtonSize.Lg,
+                        icon = QeetrixIconName.FingerprintPattern,
                         loading = busy,
                         fullWidth = true,
                     )
@@ -407,9 +414,12 @@ fun NotificationsPrimerScreen(
             onDone()
         }
 
+    val allowLabel = stringResource(if (refused) R.string.action_open_settings else R.string.notifications_allow)
+
     Welcoming {
         ScrollingPage(
             topBar = { SetupBar(totalSteps, totalSteps, onBack) },
+            arrangement = barArrangement(stringResource(R.string.action_not_now), allowLabel),
             actions = {
                 QeetrixButton(
                     stringResource(R.string.action_not_now),
@@ -420,7 +430,7 @@ fun NotificationsPrimerScreen(
                     fullWidth = true,
                 )
                 QeetrixButton(
-                    stringResource(if (refused) R.string.action_open_settings else R.string.notifications_allow),
+                    allowLabel,
                     onClick = {
                         when {
                             refused -> context.startActivity(NotificationAccess.settingsIntent(context))

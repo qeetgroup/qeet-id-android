@@ -64,7 +64,7 @@
     <string name="accounts_type_key">Type the key instead</string>
     <string name="accounts_using_qeet_id">Using Qeet ID?</string>
     <string name="accounts_link_phone">Link this %1$s</string>
-    <string name="accounts_no_match_title">No accounts match</string>
+    <string name="accounts_no_match_title">No accounts match “%1$s”</string>
     <string name="accounts_no_match_body">Check the spelling, or add the account.</string>
     <string name="account_unnamed">Unnamed account</string>
     <string name="account_actions">Show actions</string>
@@ -72,11 +72,14 @@
     <string name="copied_clears">Clears in 30 s</string>
     <string name="account_added">%1$s added</string>
     <string name="account_deleted">%1$s removed</string>
-    <string name="alert_notifications_off_title">Sign-in requests are off</string>
-    <string name="alert_notifications_off_body">Notifications are turned off for Qeet ID, so requests won\'t reach this phone.</string>
-    <string name="alert_notifications_off_action">Allow notifications</string>
+    <string name="alert_notifications_off_title">Sign-in requests can\'t reach this %1$s</string>
+    <string name="alert_notifications_off_body">Notifications are off for Qeet ID.</string>
+    <string name="alert_notifications_off_action">Turn on</string>
+    <string name="alert_unlinked_title">This %1$s was unlinked from Qeet ID</string>
+    <string name="alert_unlinked_body">It was removed from your Qeet ID account. Codes still work; link again to approve sign-ins.</string>
+    <string name="alert_unlinked_action">Link again</string>
     <string name="alert_offline_title">You\'re offline</string>
-    <string name="alert_offline_body">Codes still work. Approvals wait until you\'re back.</string>
+    <string name="alert_offline_body">Codes still work. Sign-in requests arrive when you\'re back online.</string>
     <string name="alert_vault_reset_title">Saved accounts couldn\'t be opened</string>
     <string name="alert_vault_reset_body">This phone\'s secure storage was reset, so they can\'t be read any more. Set them up again from each site.</string>
 

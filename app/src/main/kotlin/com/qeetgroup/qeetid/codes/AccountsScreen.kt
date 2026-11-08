@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -53,8 +54,6 @@ import androidx.navigation.NavHostController
 import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.system.CodeClipboard
 import com.qeetgroup.qeetid.system.NotificationAccess
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.LetterTile
 import com.qeetgroup.qeetid.ui.LinkPhone
 import com.qeetgroup.qeetid.ui.LocalAppContainer
@@ -224,14 +223,12 @@ fun AccountsScreen(
                                 QeetrixIconName.Plus,
                                 stringResource(R.string.accounts_add),
                                 onClick = { addOpen = true },
-                                tone = QeetrixButtonTone.Neutral,
                             )
                         }
                         QeetrixIconButton(
                             QeetrixIconName.Settings,
                             stringResource(R.string.accounts_settings),
                             onClick = onSettings,
-                            tone = QeetrixButtonTone.Neutral,
                         )
                     },
                 )
@@ -261,17 +258,17 @@ fun AccountsScreen(
                                 title = stringResource(R.string.alert_vault_reset_title),
                                 description = stringResource(R.string.alert_vault_reset_body),
                                 tone = QeetrixAlertTone.Warning,
-                                variant = QeetrixAlertVariant.Banner,
+                                modifier = Modifier.problem(),
                             )
                         }
                     }
                     if (linked && !notificationsOn) {
                         item(key = "notifications-off") {
                             QeetrixAlert(
-                                title = stringResource(R.string.alert_notifications_off_title),
+                                title = stringResource(R.string.alert_notifications_off_title, deviceWord()),
                                 description = stringResource(R.string.alert_notifications_off_body),
                                 tone = QeetrixAlertTone.Warning,
-                                variant = QeetrixAlertVariant.Banner,
+                                modifier = Modifier.problem(),
                                 actions = {
                                     QeetrixButton(
                                         stringResource(R.string.alert_notifications_off_action),
@@ -286,6 +283,25 @@ fun AccountsScreen(
                                                 context.startActivity(NotificationAccess.settingsIntent(context))
                                             }
                                         },
+                                        variant = QeetrixButtonVariant.Soft,
+                                        size = QeetrixButtonSize.Sm,
+                                    )
+                                },
+                            )
+                        }
+                    }
+                    if (state.unlinkedByQeetId) {
+                        item(key = "unlinked") {
+                            QeetrixAlert(
+                                title = stringResource(R.string.alert_unlinked_title, deviceWord()),
+                                description = stringResource(R.string.alert_unlinked_body),
+                                tone = QeetrixAlertTone.Warning,
+                                modifier = Modifier.problem(),
+                                actions = {
+                                    QeetrixButton(
+                                        stringResource(R.string.alert_unlinked_action),
+                                        onClick = onLink,
+                                        variant = QeetrixButtonVariant.Soft,
                                         size = QeetrixButtonSize.Sm,
                                     )
                                 },
@@ -297,8 +313,8 @@ fun AccountsScreen(
                             QeetrixAlert(
                                 title = stringResource(R.string.alert_offline_title),
                                 description = stringResource(R.string.alert_offline_body),
-                                tone = QeetrixAlertTone.Danger,
-                                variant = QeetrixAlertVariant.Banner,
+                                tone = QeetrixAlertTone.Info,
+                                modifier = Modifier.problem(),
                             )
                         }
                     }
@@ -325,22 +341,18 @@ fun AccountsScreen(
                             )
                         }
                     }
-                    item(key = "approvals") {
-                        Column(Modifier.background(QeetrixTheme.colors.surfaceRaised)) {
-                            ApprovalsRow(state, onClick = if (linked) onSettings else onLink)
-                            QeetrixSeparator(tone = QeetrixSeparatorTone.Default)
+                    // While searching, only the accounts: no approvals row and no Codes heading, as the mockup shows.
+                    if (state.query.isBlank()) {
+                        item(key = "approvals") {
+                            Column(Modifier.background(QeetrixTheme.colors.surfaceRaised)) {
+                                ApprovalsRow(state, onClick = if (linked) onSettings else onLink)
+                                QeetrixSeparator(tone = QeetrixSeparatorTone.Default)
+                            }
                         }
+                        item(key = "codes-header") { QeetrixSectionHeader(stringResource(R.string.accounts_codes)) }
                     }
-                    item(key = "codes-header") { QeetrixSectionHeader(stringResource(R.string.accounts_codes)) }
                     if (state.rows.isEmpty()) {
-                        item(key = "no-match") {
-                            QeetrixEmptyState(
-                                stringResource(R.string.accounts_no_match_title),
-                                icon = QeetrixIconName.SearchX,
-                                description = stringResource(R.string.accounts_no_match_body),
-                                size = QeetrixEmptyStateSize.Section,
-                            )
-                        }
+                        item(key = "no-match") { NoMatch(state.query, onAdd = { addOpen = true }) }
                     }
                     if (tablet) {
                         // Tablets: two columns of 4 dp cards, as on the mockup.
@@ -435,7 +447,7 @@ fun AccountsScreen(
         QeetrixSheetAction(
             stringResource(R.string.add_scan),
             onClick = onAdd,
-            icon = QeetrixIconName.ScanQrCode,
+            icon = QeetrixIconName.QrCode,
             description = stringResource(R.string.add_scan_note),
         )
         QeetrixSheetAction(
@@ -579,7 +591,7 @@ private fun EmptyAccounts(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(Modifier.size(56.dp).background(colors.bgBrandSubtle, QeetrixShapes.Control), contentAlignment = Alignment.Center) {
-            QeetrixIcon(QeetrixIconName.ScanQrCode, null, size = 28.dp, tint = colors.iconBrand)
+            QeetrixIcon(QeetrixIconName.QrCode, null, size = 28.dp, tint = colors.iconBrand)
         }
         Spacer(Modifier.height(QeetrixSpace.InsetLg))
         PageTitle(stringResource(R.string.accounts_empty_title), stringResource(R.string.accounts_empty_body), centred = true)
@@ -588,6 +600,7 @@ private fun EmptyAccounts(
             stringResource(R.string.accounts_scan_qr),
             onClick = onScan,
             size = QeetrixButtonSize.Lg,
+            icon = QeetrixIconName.QrCode,
             fullWidth = true,
         )
         Spacer(Modifier.height(QeetrixSpace.GapSm))
@@ -695,5 +708,40 @@ private fun RenameDialog(
             )
             QeetrixTextField(account, stringResource(R.string.rename_account), optional = true)
         }
+    }
+}
+
+/** A problem at the top of Accounts, as the mockup says it: an in-page alert in the page gutter, above the rest. */
+private fun Modifier.problem(): Modifier = padding(start = QeetrixSpace.InsetLg, end = QeetrixSpace.InsetLg, top = QeetrixSpace.InsetLg)
+
+/** Nothing matches the search: say so with the words searched for, and offer to add the account. */
+@Composable
+private fun NoMatch(
+    query: String,
+    onAdd: () -> Unit,
+) {
+    Column(
+        Modifier.fillMaxWidth().padding(start = QeetrixSpace.InsetLg, end = QeetrixSpace.InsetLg, top = QeetrixSpace.LayoutMd),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        QeetrixText(
+            stringResource(R.string.accounts_no_match_title, query.trim()),
+            weight = QeetrixTextWeight.Semibold,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(QeetrixSpace.GapXs))
+        QeetrixText(
+            stringResource(R.string.accounts_no_match_body),
+            size = QeetrixTextSize.Sm,
+            tone = QeetrixTextTone.Subtle,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(QeetrixSpace.InsetLg))
+        QeetrixButton(
+            stringResource(R.string.accounts_add),
+            onClick = onAdd,
+            variant = QeetrixButtonVariant.Soft,
+            icon = QeetrixIconName.Plus,
+        )
     }
 }

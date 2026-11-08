@@ -20,8 +20,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.GroupLabel
 import com.qeetgroup.qeetid.ui.isTablet
 import com.qeetgroup.qeetid.ui.readingColumn

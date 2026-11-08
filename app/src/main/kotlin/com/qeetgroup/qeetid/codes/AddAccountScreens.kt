@@ -53,8 +53,6 @@ import com.qeetgroup.qeetid.codes.totp.TotpAlgorithm
 import com.qeetgroup.qeetid.scanner.QrScanner
 import com.qeetgroup.qeetid.scanner.ScanPanel
 import com.qeetgroup.qeetid.ui.Accounts
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.LetterTile
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.NamePhone
@@ -379,7 +377,7 @@ fun TypeKeyRoute(navController: NavHostController) {
                 error = serviceError?.let { stringResource(it) },
                 startAdornment = {
                     if (service.text.isBlank()) {
-                        AppIcon(AppIconName.Globe, null, size = QeetrixSize.IconSm, tint = QeetrixTheme.colors.iconSubtle)
+                        QeetrixIcon(QeetrixIconName.Globe, null, size = QeetrixSize.IconSm, tint = QeetrixTheme.colors.iconSubtle)
                     } else {
                         LetterTile(initialOf(service.text.toString()), size = 22.dp)
                     }
@@ -408,10 +406,11 @@ fun TypeKeyRoute(navController: NavHostController) {
                 error = if (wrongCharacter) stringResource(R.string.type_key_key_invalid) else keyError?.let { stringResource(it) },
                 inputTransformation = KeyGrouping,
                 endAdornment = {
-                    QeetrixButton(
+                    QeetrixIconButton(
+                        QeetrixIconName.ClipboardPaste,
                         stringResource(R.string.type_key_paste),
                         onClick = { clipboardText(context)?.let { pasted -> key.setTextAndPlaceCursorAtEnd(group(pasted)) } },
-                        variant = QeetrixButtonVariant.Ghost,
+                        tone = QeetrixButtonTone.Neutral,
                         size = QeetrixButtonSize.Sm,
                     )
                 },

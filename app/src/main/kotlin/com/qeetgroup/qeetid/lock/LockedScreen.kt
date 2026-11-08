@@ -35,8 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.qeetgroup.qeetid.R
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.LocalUserVerification
 import com.qeetgroup.qeetid.ui.MarkRings
@@ -115,6 +113,7 @@ fun LockedScreen() {
                         onClick = { scope.launch { unlock() } },
                         modifier = Modifier.readingColumn(),
                         size = QeetrixButtonSize.Lg,
+                        icon = QeetrixIconName.FingerprintPattern,
                         loading = busy,
                         fullWidth = true,
                     )
@@ -180,7 +179,7 @@ private fun RequestWaiting() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(40.dp).background(colors.bgBrandSubtle, CircleShape), contentAlignment = Alignment.Center) {
-            AppIcon(AppIconName.BellRing, null, tint = colors.iconBrand)
+            QeetrixIcon(QeetrixIconName.BellRing, null, tint = colors.iconBrand)
         }
         Column {
             QeetrixText(stringResource(R.string.locked_request_waiting), weight = QeetrixTextWeight.Semibold)

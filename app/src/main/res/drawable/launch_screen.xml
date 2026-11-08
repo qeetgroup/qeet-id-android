@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launch screen on Android 10 and 11, which have no system splash screen: made to match the one Android 12 and
+     later draw (values-v31/themes.xml) — the 128 dp round mark in the middle and "from Qeet Group" 60 dp from the
+     bottom, on color.surface.canvas. Light and dark come from the colours and launch_branding's night variant. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/launch_canvas" />
+    <item
+        android:width="128dp"
+        android:height="128dp"
+        android:drawable="@drawable/qeet_id_mark_round"
+        android:gravity="center" />
+    <item
+        android:width="200dp"
+        android:height="80dp"
+        android:bottom="60dp"
+        android:drawable="@drawable/launch_branding"
+        android:gravity="bottom|center_horizontal" />
+</layer-list>

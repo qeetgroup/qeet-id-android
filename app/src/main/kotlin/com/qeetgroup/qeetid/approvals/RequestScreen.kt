@@ -46,8 +46,6 @@ import com.qeetgroup.qeetid.data.api.SignInRequest
 import com.qeetgroup.qeetid.lock.VerifyPrompt
 import com.qeetgroup.qeetid.lock.VerifyResult
 import com.qeetgroup.qeetid.ui.Accounts
-import com.qeetgroup.qeetid.ui.AppIcon
-import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.LinkPhone
 import com.qeetgroup.qeetid.ui.LocalAppContainer
 import com.qeetgroup.qeetid.ui.LocalUserVerification
@@ -157,7 +155,7 @@ fun RequestScreen(
                 actions = { DoneButton(onClose) },
             ) {
                 RequestDetails(state.request, withPlace = true)
-                ResultNote(AppIconName.ShieldAlert, stringResource(R.string.request_approved_undo))
+                ResultNote(QeetrixIconName.ShieldAlert, stringResource(R.string.request_approved_undo))
             }
         }
 
@@ -189,7 +187,7 @@ fun RequestScreen(
                     actions = { DoneButton(onClose) },
                 ) {
                     state.request?.let { RequestDetails(it, withPlace = false) }
-                    ResultNote(AppIconName.RotateCcw, stringResource(R.string.request_ended_again))
+                    ResultNote(QeetrixIconName.RotateCcw, stringResource(R.string.request_ended_again))
                 }
             }
         }
@@ -441,9 +439,6 @@ private fun dayAndTime(
         DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME or DateUtils.FORMAT_ABBREV_MONTH,
     )
 
-/** The icon at the start of a fact's row. */
-private enum class FactIcon { Laptop, Place, Clock, Address }
-
 /** The sign-in's facts on ruled rows, each with its icon: laptop, pin, clock, globe. */
 @Composable
 private fun FactsCard(facts: RequestFacts) {
@@ -451,10 +446,10 @@ private fun FactsCard(facts: RequestFacts) {
     val short = isShort()
     val rows =
         listOfNotNull(
-            facts.browser?.let { FactIcon.Laptop to it },
-            facts.place?.let { FactIcon.Place to stringResource(R.string.request_near_place, it) },
-            facts.day?.let { FactIcon.Clock to it },
-            facts.ip?.let { FactIcon.Address to stringResource(R.string.request_ip_value, it) },
+            facts.browser?.let { QeetrixIconName.Laptop to it },
+            facts.place?.let { QeetrixIconName.MapPin to stringResource(R.string.request_near_place, it) },
+            facts.day?.let { QeetrixIconName.Clock to it },
+            facts.ip?.let { QeetrixIconName.Globe to stringResource(R.string.request_ip_value, it) },
         )
     if (rows.isEmpty()) return
     val label = stringResource(R.string.request_details)
@@ -472,13 +467,7 @@ private fun FactsCard(facts: RequestFacts) {
                 horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                val tint = colors.iconSubtle
-                when (icon) {
-                    FactIcon.Laptop -> AppIcon(AppIconName.Laptop, null, size = QeetrixSize.IconSm, tint = tint)
-                    FactIcon.Place -> QeetrixIcon(QeetrixIconName.MapPin, null, size = QeetrixSize.IconSm, tint = tint)
-                    FactIcon.Clock -> QeetrixIcon(QeetrixIconName.Clock, null, size = QeetrixSize.IconSm, tint = tint)
-                    FactIcon.Address -> AppIcon(AppIconName.Globe, null, size = QeetrixSize.IconSm, tint = tint)
-                }
+                QeetrixIcon(icon, null, size = QeetrixSize.IconSm, tint = colors.iconSubtle)
                 QeetrixText(text)
             }
         }

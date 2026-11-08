@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- qeet-mockups/products/qeet-id/brand/android-adaptive-monochrome.svg: the keyhole, a disc with a keyhole cut out, inside the
-     adaptive icon's safe zone. -->
+<!-- qeet-mockups/products/qeet-id/brand/android-adaptive-monochrome.svg: the keyhole, a disc with a keyhole cut out, for themed icons. The launcher shows the middle
+     72 dp of this 108 dp canvas, so the 100-unit mark is drawn at 0.72 there: the disc is 58 % of the icon's width, as
+     on the round mark in the app and the mockups. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:translateX="4"
-        android:translateY="4">
+        android:scaleX="0.72"
+        android:scaleY="0.72"
+        android:translateX="18"
+        android:translateY="18">
         <path
             android:fillColor="#000000"
             android:fillType="evenOdd"

@@ -16,6 +16,7 @@ class Preferences(
     private val _onboarded = MutableStateFlow(prefs.getBoolean(ONBOARDED, false))
     private val _appLock = MutableStateFlow(prefs.getBoolean(APP_LOCK, false))
     private val _hideCodes = MutableStateFlow(prefs.getBoolean(HIDE_CODES, false))
+    private val _unlinkedByQeetId = MutableStateFlow(prefs.getBoolean(UNLINKED_BY_QEET_ID, false))
 
     /** Whether the welcome pages have been through. */
     val onboarded: StateFlow<Boolean> = _onboarded.asStateFlow()
@@ -25,6 +26,9 @@ class Preferences(
 
     /** Show codes as dots until tapped. */
     val hideCodes: StateFlow<Boolean> = _hideCodes.asStateFlow()
+
+    /** Qeet ID removed this phone's link (an administrator, or the person elsewhere), until it is linked again. */
+    val unlinkedByQeetId: StateFlow<Boolean> = _unlinkedByQeetId.asStateFlow()
 
     /** Whether the camera has been asked for once (to tell "not asked yet" from "refused for good"). */
     var cameraAsked: Boolean
@@ -42,6 +46,8 @@ class Preferences(
 
     fun setHideCodes(value: Boolean) = set(HIDE_CODES, value, _hideCodes)
 
+    fun setUnlinkedByQeetId(value: Boolean) = set(UNLINKED_BY_QEET_ID, value, _unlinkedByQeetId)
+
     private fun set(
         key: String,
         value: Boolean,
@@ -57,5 +63,6 @@ class Preferences(
         const val HIDE_CODES = "hide_codes"
         const val CAMERA_ASKED = "camera_asked"
         const val NOTIFICATIONS_ASKED = "notifications_asked"
+        const val UNLINKED_BY_QEET_ID = "unlinked_by_qeet_id"
     }
 }
