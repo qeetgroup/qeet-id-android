@@ -1,5 +1,8 @@
 package com.qeetgroup.qeetid.data.api
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
@@ -97,9 +100,13 @@ sealed interface UnlinkResult {
 
 /** Asking the server for sign-in requests waiting for this phone. */
 sealed interface PendingResult {
-    /** Pending, unexpired requests, newest first (possibly none). */
+    /**
+     * Pending, unexpired requests, newest first (possibly none). [clockOffsetMillis] is the server's clock less the
+     * phone's, from the answer's Date header, so each request's time left is right even when the phone's clock is not.
+     */
     data class Found(
         val requests: List<SignInRequest>,
+        val clockOffsetMillis: Long = 0L,
     ) : PendingResult
 
     /** The server has no such route yet (an older server). */
@@ -136,11 +143,16 @@ sealed interface PushTokenResult {
  * Every call returns a result and never throws for a network or server failure.
  */
 class QeetIdApi(
-    private val baseUrl: HttpUrl,
-    private val client: OkHttpClient = defaultClient(),
-    private val userAgent: String = "QeetID-Android",
+    internal val baseUrl: HttpUrl,
+    internal val client: OkHttpClient = defaultClient(),
+    internal val userAgent: String = "QeetID-Android",
     private val now: () -> Long = System::currentTimeMillis,
 ) {
+    private val _updateRequired = MutableStateFlow(false)
+
+    /** Qeet ID answered 426 Upgrade Required: it no longer accepts this version for sign-in approvals. */
+    val updateRequired: StateFlow<Boolean> = _updateRequired.asStateFlow()
+
     private val json =
         Json {
             ignoreUnknownKeys = true
@@ -277,7 +289,12 @@ class QeetIdApi(
             post(url("mfa", "push", "devices", deviceId, "pending"), body).use { res ->
                 if (res.isSuccessful) {
                     val pending = decode(PendingResponse.serializer(), res) ?: return PendingResult.Network
-                    return PendingResult.Found(pending.challenges)
+                    val offset =
+                        res.headers
+                            .getDate("Date")
+                            ?.time
+                            ?.let { it - now() } ?: 0L
+                    return PendingResult.Found(pending.challenges, offset)
                 }
                 val error = error(res)
                 when {
@@ -385,6 +402,7 @@ class QeetIdApi(
     companion object {
         private val JSON = "application/json; charset=utf-8".toMediaType()
         private const val DEFAULT_RETRY_SECONDS = 60
+        private const val HTTP_UPGRADE_REQUIRED = 426
 
         /** The server's answer when this phone's device credential is wrong or expired: the link is gone. */
         private const val PUSH_UNAUTHORIZED = "mfa.push_unauthorized"
@@ -403,8 +421,9 @@ class QeetIdApi(
     }
 
     private suspend fun execute(request: Request): Response {
-        val call = client.newCall(request)
-        return call.await()
+        val response = client.newCall(request).await()
+        if (response.code == HTTP_UPGRADE_REQUIRED) _updateRequired.value = true
+        return response
     }
 }
 

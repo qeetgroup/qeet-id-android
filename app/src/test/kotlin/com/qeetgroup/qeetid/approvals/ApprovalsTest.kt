@@ -14,6 +14,7 @@ import com.qeetgroup.qeetid.data.api.PushTokenResult
 import com.qeetgroup.qeetid.settings.SettingsViewModel
 import com.qeetgroup.qeetid.settings.UnlinkOutcome
 import com.qeetgroup.qeetid.ui.NamePhone
+import com.qeetgroup.qeetid.ui.RequestsWaiting
 import com.qeetgroup.qeetid.ui.SignInRequestRoute
 import kotlinx.coroutines.runBlocking
 import mockwebserver3.MockResponse
@@ -67,7 +68,8 @@ class ApprovalsTest {
         status: String = "pending",
         userId: String = "u1",
         expires: Instant = Instant.now().plusSeconds(110),
-    ) = """{"id":"$requestId","user_id":"$userId","action":"sign_in","status":"$status","expires_at":"$expires",
+        id: String = requestId,
+    ) = """{"id":"$id","user_id":"$userId","action":"sign_in","status":"$status","expires_at":"$expires",
            "created_at":"${Instant.now()}","context":{"ip":"49.205.143.27","user_agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/131.0"}}"""
 
     // Linking
@@ -164,7 +166,7 @@ class ApprovalsTest {
         awaitUntil { model.state.value is RequestState.Review }
         respond(200, """{"status":"denied"}""")
         model.deny()
-        awaitUntil { model.state.value == RequestState.Denied }
+        awaitUntil { model.state.value is RequestState.Denied }
     }
 
     @Test
@@ -176,7 +178,7 @@ class ApprovalsTest {
         respond(403, """{"error":{"code":"mfa.push_number_mismatch","message":"x"}}""")
         model.approve(12)
         awaitUntil { model.state.value is RequestState.Ended }
-        assertEquals(RequestState.Ended(EndReason.NumberMismatch), model.state.value)
+        assertEquals(EndReason.NumberMismatch, (model.state.value as RequestState.Ended).reason)
     }
 
     @Test
@@ -194,19 +196,19 @@ class ApprovalsTest {
     @Test
     fun requestStatesFromTheServer() {
         link()
-        val cases =
+        val cases: List<Pair<String, (RequestState) -> Boolean>> =
             listOf(
-                request(status = "approved") to RequestState.Answered(approved = true),
-                request(status = "denied") to RequestState.Answered(approved = false),
-                request(status = "expired") to RequestState.Ended(EndReason.Expired),
-                request(expires = Instant.now().minusSeconds(5)) to RequestState.Ended(EndReason.Expired),
-                request(userId = "someone-else") to RequestState.NotThisAccount,
+                request(status = "approved") to { it is RequestState.Answered && it.approved },
+                request(status = "denied") to { it is RequestState.Answered && !it.approved },
+                request(status = "expired") to { it is RequestState.Ended && it.reason == EndReason.Expired && it.request != null },
+                request(expires = Instant.now().minusSeconds(5)) to { it is RequestState.Ended && it.reason == EndReason.Expired },
+                request(userId = "someone-else") to { it == RequestState.NotThisAccount },
             )
-        for ((body, expected) in cases) {
+        for ((body, matches) in cases) {
             respond(200, body)
             val model = RequestViewModel(container, requestId)
             awaitUntil { model.state.value != RequestState.Loading }
-            assertEquals(expected, model.state.value)
+            assertTrue("$body gave ${model.state.value}", matches(model.state.value))
         }
         respond(404)
         val gone = RequestViewModel(container, requestId)
@@ -246,6 +248,46 @@ class ApprovalsTest {
         respond(200, pending)
         runBlocking { container.inbox.checkPending(explicit = true).join() }
         assertEquals("a pull to refresh opens it again", SignInRequestRoute(requestId), container.inbox.next.value)
+    }
+
+    @Test
+    fun moreThanOneWaitingOpensRequestsWaiting() {
+        link()
+        val pending = """{"challenges":[${request()},${request(id = UUID.randomUUID().toString())}]}"""
+        respond(200, pending)
+        runBlocking { container.inbox.checkPending().join() }
+        assertEquals(RequestsWaiting, container.inbox.next.value)
+        container.inbox.opened(RequestsWaiting)
+        assertNull(container.inbox.next.value)
+
+        respond(200, pending)
+        runBlocking { container.inbox.checkPending().join() }
+        assertNull("both were seen", container.inbox.next.value)
+    }
+
+    @Test
+    fun denyAllDeniesEveryWaitingRequest() {
+        link()
+        val other = UUID.randomUUID().toString()
+        respond(200, """{"challenges":[${request()},${request(id = other)}]}""")
+        val model = RequestsWaitingViewModel(container)
+        awaitUntil { model.state.value is WaitingState.Waiting }
+        assertEquals(2, (model.state.value as WaitingState.Waiting).requests.size)
+        server.takeRequest()
+        respond(200, """{"status":"denied"}""")
+        respond(200, """{"status":"denied"}""")
+        model.denyAll()
+        awaitUntil { model.state.value is WaitingState.DeniedAll }
+        assertEquals(listOf(requestId, other), (model.state.value as WaitingState.DeniedAll).ids)
+        repeat(2) {
+            val body =
+                server
+                    .takeRequest()
+                    .body
+                    ?.utf8()
+                    .orEmpty()
+            assertTrue(body, body.contains("\"approved\":false"))
+        }
     }
 
     @Test

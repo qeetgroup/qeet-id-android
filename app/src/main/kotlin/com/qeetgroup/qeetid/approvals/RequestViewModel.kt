@@ -3,6 +3,7 @@ package com.qeetgroup.qeetid.approvals
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.qeetgroup.qeetid.AppContainer
+import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.data.api.FetchResult
 import com.qeetgroup.qeetid.data.api.RespondResult
 import com.qeetgroup.qeetid.data.api.SignInRequest
@@ -54,15 +55,20 @@ sealed interface RequestState {
         val request: SignInRequest,
     ) : RequestState
 
-    data object Denied : RequestState
-
-    data class Ended(
-        val reason: EndReason,
+    data class Denied(
+        val request: SignInRequest,
     ) : RequestState
 
-    /** Already approved or denied, on this phone or another. */
+    /** It can't be answered any more; [request] when it was read, to name the sign-in. */
+    data class Ended(
+        val reason: EndReason,
+        val request: SignInRequest? = null,
+    ) : RequestState
+
+    /** Already approved or denied, on another phone, or cancelled on the computer. */
     data class Answered(
         val approved: Boolean,
+        val request: SignInRequest,
     ) : RequestState
 }
 
@@ -107,9 +113,9 @@ class RequestViewModel(
                         expiresAtLocal = result.expiresAtLocalMillis
                         when {
                             request.userId.isNotEmpty() && request.userId != link.userId -> RequestState.NotThisAccount
-                            request.status == SignInRequest.APPROVED -> RequestState.Answered(approved = true)
-                            request.status == SignInRequest.DENIED -> RequestState.Answered(approved = false)
-                            request.status != SignInRequest.PENDING || secondsLeft() == 0 -> RequestState.Ended(EndReason.Expired)
+                            request.status == SignInRequest.APPROVED -> RequestState.Answered(approved = true, request)
+                            request.status == SignInRequest.DENIED -> RequestState.Answered(approved = false, request)
+                            request.status != SignInRequest.PENDING || secondsLeft() == 0 -> RequestState.Ended(EndReason.Expired, request)
                             else -> RequestState.Review(request, secondsLeft()).also { startCountdown() }
                         }
                     }
@@ -144,15 +150,15 @@ class RequestViewModel(
             _state.value =
                 when (result) {
                     RespondResult.Done -> {
-                        if (approved) RequestState.Approved(review.request) else RequestState.Denied
+                        if (approved) RequestState.Approved(review.request) else RequestState.Denied(review.request)
                     }
 
                     RespondResult.NumberMismatch -> {
-                        RequestState.Ended(EndReason.NumberMismatch)
+                        RequestState.Ended(EndReason.NumberMismatch, review.request)
                     }
 
                     RespondResult.Expired -> {
-                        RequestState.Ended(EndReason.Expired)
+                        RequestState.Ended(EndReason.Expired, review.request)
                     }
 
                     RespondResult.NotThisAccount -> {
@@ -165,11 +171,11 @@ class RequestViewModel(
                     }
 
                     RespondResult.Network -> {
-                        review.copy(sending = false, error = com.qeetgroup.qeetid.R.string.request_error_network)
+                        review.copy(sending = false, error = R.string.request_error_network)
                     }
 
                     is RespondResult.Refused -> {
-                        review.copy(sending = false, error = com.qeetgroup.qeetid.R.string.request_error_refused)
+                        review.copy(sending = false, error = R.string.request_error_refused)
                     }
                 }
             if (_state.value !is RequestState.Review) countdown?.cancel()
@@ -186,7 +192,7 @@ class RequestViewModel(
                     _state.update { current ->
                         when {
                             current !is RequestState.Review -> current
-                            left == 0 && !current.sending -> RequestState.Ended(EndReason.Expired)
+                            left == 0 && !current.sending -> RequestState.Ended(EndReason.Expired, current.request)
                             else -> current.copy(secondsLeft = left)
                         }
                     }

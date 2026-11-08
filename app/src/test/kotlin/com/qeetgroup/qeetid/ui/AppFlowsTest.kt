@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.Settings
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.isDialog
@@ -11,10 +12,12 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.performTouchInput
@@ -24,6 +27,9 @@ import com.qeetgroup.qeetid.FakeConnectivity
 import com.qeetgroup.qeetid.FakePushTokens
 import com.qeetgroup.qeetid.FakeVerification
 import com.qeetgroup.qeetid.TestContainers
+import com.qeetgroup.qeetid.admin.FakePasskeys
+import com.qeetgroup.qeetid.admin.FakeQeetId
+import com.qeetgroup.qeetid.admin.SignInOutcome
 import com.qeetgroup.qeetid.approvals.PhoneLink
 import com.qeetgroup.qeetid.codes.totp.Base32
 import com.qeetgroup.qeetid.codes.totp.NewAccount
@@ -52,6 +58,7 @@ class AppFlowsTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val server = MockWebServer()
     private val verification = FakeVerification()
+    private val passkeys = FakePasskeys()
     private val connectivity = FakeConnectivity()
     private lateinit var container: AppContainer
     private val secret = Base32.decode("JBSWY3DPEHPK3PXP")!!
@@ -81,7 +88,7 @@ class AppFlowsTest {
 
     private fun launch(onboarded: Boolean = true) {
         container.preferences.setOnboarded(onboarded)
-        compose.setContent { QeetIdApp(container, verification) }
+        compose.setContent { QeetIdApp(container, verification, passkeys) }
     }
 
     private fun addAccount(
@@ -110,7 +117,7 @@ class AppFlowsTest {
         compose.onNodeWithText("Get started").performClick()
         compose.onNodeWithText("Lock Qeet ID").assertExists()
         compose.onNodeWithText("Step 1 of 2").assertExists()
-        compose.onNodeWithText("Continue").performClick()
+        compose.onNodeWithText("Use fingerprint").performClick()
         waitFor("Get sign-in requests on this phone")
         assertEquals("turning the lock on asks first", 1, verification.prompts.size)
         assertTrue(container.preferences.appLock.value)
@@ -159,14 +166,14 @@ class AppFlowsTest {
         compose.onNodeWithText("brightleaf-foods").assertExists()
         compose.onNodeWithText("Codes").assertExists()
         compose.onNodeWithText("Sign-in approvals").assertExists()
-        compose.onNodeWithText("Not set up · Link this phone").assertExists()
+        compose.onNodeWithText("Link this phone to approve Qeet ID sign-ins").assertExists()
     }
 
     @Test
     fun typingASetupKeyAddsAnAccount() {
         launch()
         waitFor("No accounts yet")
-        compose.onNodeWithText("Type the key").performClick()
+        compose.onNodeWithText("Type the key instead").performClick()
         waitFor("Type the setup key")
         textFields()[0].performTextInput("Razorpay")
         textFields()[1].performTextInput("accounts@brightleaffoods.in")
@@ -186,11 +193,11 @@ class AppFlowsTest {
     fun aBadSetupKeySaysWhatToFix() {
         launch()
         waitFor("No accounts yet")
-        compose.onNodeWithText("Type the key").performClick()
+        compose.onNodeWithText("Type the key instead").performClick()
+        waitFor("Type the setup key")
         textFields()[2].performTextInput("JBSW1")
-        compose.onNodeWithText("Add account").performClick()
-        waitFor("Enter the service's name")
-        waitFor("A setup key has only the letters A to Z")
+        waitFor("Keys use only A–Z and 2–7")
+        compose.onAllNodesWithText("Add account").onLast().assertIsNotEnabled()
         assertTrue(
             container.accounts.accounts.value
                 .orEmpty()
@@ -199,18 +206,18 @@ class AppFlowsTest {
     }
 
     @Test
-    fun deletingAnAccountAsksFirst() {
+    fun removingAnAccountAsksFirst() {
         val account = addAccount()
         launch()
         waitFor("GitHub")
         compose.onNodeWithTag("account-${account.id}").performTouchInput { longClick() }
         waitFor("Copy code")
         compose.onNodeWithText("Rename").assertExists()
-        compose.onNodeWithText("Delete account").performClick()
-        waitFor("Delete GitHub?")
-        compose.onNodeWithText("Turn off 2-step verification on GitHub first", substring = true).assertExists()
-        compose.onAllNodesWithText("Delete account").onFirst().performClick()
-        waitFor("GitHub deleted")
+        compose.onNodeWithText("Remove from this phone").performClick()
+        waitFor("Remove GitHub?")
+        compose.onNodeWithText("Turn off 2-step verification there first", substring = true).assertExists()
+        compose.onNodeWithText("Remove").performClick()
+        waitFor("GitHub removed")
         compose.waitUntil(5_000) {
             container.accounts.accounts.value
                 .orEmpty()
@@ -226,7 +233,7 @@ class AppFlowsTest {
         compose.onNodeWithTag("account-${account.id}").performTouchInput { longClick() }
         waitFor("Rename")
         compose.onNodeWithText("Rename").performClick()
-        waitFor("Rename account")
+        waitFor("Only changes how it shows on this phone")
         compose.onAllNodes(hasSetTextAction() and hasAnyAncestor(isDialog()))[0].performTextReplacement("GitHub (work)")
         compose.onNodeWithText("Save").performClick()
         waitFor("GitHub (work)")
@@ -246,6 +253,8 @@ class AppFlowsTest {
         launch()
         waitFor("GitHub")
         compose.onNodeWithContentDescription("Add account").performClick()
+        waitFor("Add an account")
+        compose.onNodeWithText("Scan a QR code").performClick()
         waitFor("Allow the camera")
         compose.onNodeWithText("Type the key instead").performClick()
         waitFor("Type the setup key")
@@ -261,7 +270,7 @@ class AppFlowsTest {
         waitFor("You're offline")
         compose.onNodeWithText("Sign-in requests are off").assertExists()
         compose.onNodeWithText("Allow notifications").assertExists()
-        compose.onNodeWithText("Linked · Meera's Pixel 9").assertExists()
+        compose.onNodeWithText("For meera@brightleaffoods.in").assertExists()
     }
 
     // Linking
@@ -271,17 +280,17 @@ class AppFlowsTest {
         respond(201, """{"user_id":"u1","device":{"id":"d1"},"device_token":"t1","account":{"email":"meera@brightleaffoods.in"}}""")
         launch()
         waitFor("No accounts yet")
-        compose.onNodeWithText("Link this phone").performClick()
-        waitFor("Open Qeet ID on your computer")
-        compose.onNodeWithText("Type the code instead").performClick()
-        waitFor("Name for this phone")
+        compose.onNodeWithText("Link this phone").performScrollTo().performClick()
+        waitFor("Approve sign-ins here")
+        compose.onNodeWithText("Type the code").performClick()
+        waitFor("Name this phone")
         textFields()[0].performTextInput("km7qx4trwp")
         textFields()[1].performTextReplacement("Meera's Pixel 9")
-        compose.onNodeWithText("Link phone").performClick()
-        waitFor("Phone linked")
+        compose.onAllNodesWithText("Link this phone").onLast().performClick()
+        waitFor("This phone is linked")
         compose.onNodeWithText("meera@brightleaffoods.in").assertExists()
         compose.onNodeWithText("Meera's Pixel 9").assertExists()
-        compose.onNodeWithText("link again to extend", substring = true).assertExists()
+        compose.onNodeWithText("a request comes to this phone", substring = true).assertExists()
         assertEquals("t1", runBlocking { container.links.get() }!!.deviceToken)
         compose.onNodeWithText("Done").performClick()
         waitFor("No accounts yet")
@@ -292,10 +301,9 @@ class AppFlowsTest {
         respond(401, """{"error":{"code":"mfa.pairing_code_invalid","message":"x"}}""")
         launch()
         container.inbox.openPairing("qeetidauth://pair?code=KM7QX-4TRWP")
-        waitFor("Name for this phone")
-        compose.onNodeWithText("KM7QX-4TRWP").assertExists()
-        compose.onNodeWithText("Link phone").performClick()
-        waitFor("That code is wrong, already used or expired")
+        waitFor("Name this phone")
+        compose.onAllNodesWithText("Link this phone").onLast().performClick()
+        waitFor("This code didn't work")
         assertNull(runBlocking { container.links.get() })
     }
 
@@ -311,10 +319,11 @@ class AppFlowsTest {
         respond(200, request())
         launch()
         container.inbox.openRequest(requestId)
-        waitFor("Are you signing in to Qeet ID?")
+        waitFor("Is this you signing in?")
+        compose.onNodeWithText("To meera@brightleaffoods.in").assertExists()
         compose.onNodeWithText("Chrome on macOS").assertExists()
-        compose.onNodeWithText("Hyderabad, India").assertExists()
-        compose.onNodeWithText("49.205.143.27").assertExists()
+        compose.onNodeWithText("Near Hyderabad, India").assertExists()
+        compose.onNodeWithText("IP address 49.205.143.27").assertExists()
         compose.onNodeWithText("left", substring = true).assertExists()
     }
 
@@ -325,7 +334,8 @@ class AppFlowsTest {
         textFields()[0].performTextInput("47")
         compose.onNodeWithText("Approve").performClick()
         waitFor("Sign-in approved")
-        compose.onNodeWithText("Chrome on macOS is signing in to Qeet ID", substring = true).assertExists()
+        compose.onNodeWithText("Go back to the computer", substring = true).assertExists()
+        compose.onNodeWithText("Near Hyderabad, India").assertExists()
         assertEquals("Approve sign-in", verification.prompts.single().title)
         server.takeRequest()
         assertTrue(
@@ -352,9 +362,9 @@ class AppFlowsTest {
         openRequest()
         respond(200, """{"status":"denied"}""")
         compose.onNodeWithText("Deny").performClick()
-        waitFor("Sign-in blocked")
-        compose.onNodeWithText("Change your Qeet ID password").assertExists()
-        compose.onNodeWithText("Open security").assertExists()
+        waitFor("Sign-in denied")
+        compose.onNodeWithText("Change password").assertExists()
+        compose.onNodeWithText("Chrome on macOS").assertExists()
     }
 
     @Test
@@ -363,8 +373,8 @@ class AppFlowsTest {
         respond(403, """{"error":{"code":"mfa.push_number_mismatch","message":"x"}}""")
         textFields()[0].performTextInput("12")
         compose.onNodeWithText("Approve").performClick()
-        waitFor("This request has ended")
-        compose.onNodeWithText("The number didn't match", substring = true).assertExists()
+        waitFor("The number didn't match")
+        compose.onNodeWithText("So the sign-in was stopped", substring = true).assertExists()
     }
 
     @Test
@@ -373,10 +383,10 @@ class AppFlowsTest {
         respond(500)
         launch()
         container.inbox.openRequest(requestId)
-        waitFor("Couldn't load the request")
+        waitFor("Couldn't open the request")
         respond(200, request())
         compose.onNodeWithText("Try again").performClick()
-        waitFor("Are you signing in to Qeet ID?")
+        waitFor("Is this you signing in?")
     }
 
     // Settings
@@ -392,11 +402,11 @@ class AppFlowsTest {
         compose.onNodeWithText("Meera's Pixel 9 · linked until", substring = true).assertExists()
         compose.onNodeWithText("Unlink this phone").performClick()
         waitFor("Unlink this phone?")
-        compose.onNodeWithText("Your sign-in codes stay on this phone", substring = true).assertExists()
+        compose.onNodeWithText("Your codes stay on this phone").assertExists()
         compose.onNodeWithText("Unlink").performClick()
-        waitFor("Phone unlinked")
+        waitFor("This phone is unlinked")
         assertNull(runBlocking { container.links.get() })
-        compose.onNodeWithText("Off").assertExists()
+        compose.onNodeWithText("Not linked").assertExists()
     }
 
     @Test
@@ -405,11 +415,61 @@ class AppFlowsTest {
         waitFor("Accounts")
         compose.onNodeWithContentDescription("Settings").performClick()
         waitFor("Hide codes until tapped")
-        compose.onNodeWithText("Hide codes until tapped").performClick()
+        compose.onNodeWithContentDescription("Hide codes until tapped").performClick()
         compose.waitUntil(5_000) { container.preferences.hideCodes.value }
-        compose.onNodeWithText("App lock").performClick()
+        compose.onNodeWithContentDescription("Lock with fingerprint").performClick()
         compose.waitUntil(5_000) { container.preferences.appLock.value }
         assertEquals("Turn on app lock", verification.prompts.single().title)
-        compose.onNodeWithText("Help and privacy").assertExists()
+        compose.onNodeWithText("About and help").assertExists()
+    }
+
+    // Administration
+
+    @Test
+    fun anAdministratorSignsInWithAPasskeyAndApprovesAnAccessRequest() {
+        val qeetId = FakeQeetId()
+        server.dispatcher = qeetId
+        launch()
+        waitFor("Accounts")
+        compose.onNodeWithContentDescription("Settings").performClick()
+        waitFor("Administration")
+        compose.onNodeWithText("Access requests, emergencies and critical events").performScrollTo().performClick()
+        waitFor("For administrators, away from the desk")
+        compose.onNodeWithText("Sign in").performClick()
+        // One organisation: straight to Admin home.
+        waitFor("Waiting for an administrator")
+        compose.onNodeWithText("Brightleaf Foods").assertExists()
+        compose.onNodeWithText("1 high").assertExists()
+        compose.onNodeWithText("1 running in this organisation").assertExists()
+        compose.onNodeWithText("Access requests").performClick()
+        waitFor("Arjun Rao")
+        compose.onNodeWithText("Arjun Rao").performClick()
+        waitFor("Closing the quarter")
+        compose.onNodeWithText("Finance administrator").assertExists()
+        compose.onNodeWithText("For 7 days").assertExists()
+        compose.onNodeWithText("Approve").performClick()
+        waitFor("Access given")
+        assertEquals("the sign-in and the step-up each asked for the passkey", 2, passkeys.asked.size)
+        assertTrue("POST /v1/tenants/t1/access-requests/q1/approve" in qeetId.calls)
+    }
+
+    @Test
+    fun stoppingEveryAgentAsksThePhoneFirst() {
+        server.dispatcher = FakeQeetId()
+        runBlocking {
+            val organization = (container.admin.signIn(passkeys) as SignInOutcome.SignedIn).organizations.single()
+            container.admin.choose(organization)
+        }
+        launch()
+        waitFor("Accounts")
+        compose.onNodeWithContentDescription("Settings").performClick()
+        waitFor("Signed in · Brightleaf Foods")
+        compose.onNodeWithText("Signed in · Brightleaf Foods").performScrollTo().performClick()
+        waitFor("Stop all AI agents")
+        compose.onNodeWithText("Stop all AI agents").performScrollTo().performClick()
+        waitFor("Stop every AI agent in Brightleaf Foods?")
+        compose.onNodeWithText("Stop 1 agent").performClick()
+        waitFor("Every agent stopped")
+        assertEquals("Stop all AI agents", verification.prompts.last().title)
     }
 }

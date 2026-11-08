@@ -11,6 +11,7 @@ lifecycle = "2.11.0"
 navigation = "2.10.2"
 fragment = "1.9.1"
 biometric = "1.1.0"
+credentials = "1.6.0"
 camerax = "1.6.2"
 zxing = "3.5.4"
 okhttp = "5.5.1"
@@ -40,6 +41,8 @@ lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", 
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
 biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+credentials-play-services = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
 camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }

@@ -3,9 +3,13 @@ package com.qeetgroup.qeetid.approvals.push
 import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.appContainer
+import com.qeetgroup.qeetid.approvals.BrowserName
 import com.qeetgroup.qeetid.approvals.RequestInbox
+import com.qeetgroup.qeetid.data.api.FetchResult
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * A push message from the server: a data-only message (`type`, `challenge_id`, `action`) — the app writes the
@@ -35,8 +39,34 @@ object PushMessages {
         val container = context.appContainer
         val linked = runBlocking { container.links.get() } != null
         if (!linked) return
-        SignInNotifications.show(context, id)
+        SignInNotifications.show(context, id, describe(context, id))
         val inFront = ProcessLifecycleOwner.get().lifecycle.currentState
         if (inFront.isAtLeast(Lifecycle.State.STARTED)) container.inbox.openRequest(id)
     }
+
+    /**
+     * What's signing in and from where, for the notification ("Chrome on macOS, near Bengaluru, is signing in…"), so
+     * a request nobody expected stands out before the app is open. The message carries only the id, so this reads the
+     * request, briefly; null (the plain wording) when it can't.
+     */
+    private fun describe(
+        context: Context,
+        id: String,
+    ): String? {
+        val found =
+            runBlocking { withTimeoutOrNull(LOOKUP_MILLIS) { context.appContainer.api.signInRequest(id) } } as? FetchResult.Found
+                ?: return null
+        val request = found.request
+        val browser =
+            BrowserName.describe(request.context.userAgent) { b, system -> context.getString(R.string.request_browser_on, b, system) }
+                ?: return null
+        val place = request.context.location?.takeIf { it.isNotBlank() }
+        return if (place != null) {
+            context.getString(R.string.notification_body_from_place, browser, place)
+        } else {
+            context.getString(R.string.notification_body_from, browser)
+        }
+    }
+
+    private const val LOOKUP_MILLIS = 4_000L
 }

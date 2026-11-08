@@ -1,6 +1,8 @@
 package com.qeetgroup.qeetid
 
 import android.content.Context
+import com.qeetgroup.qeetid.admin.AdminApi
+import com.qeetgroup.qeetid.admin.AdminSession
 import com.qeetgroup.qeetid.approvals.PhoneLinkStore
 import com.qeetgroup.qeetid.approvals.RequestInbox
 import com.qeetgroup.qeetid.approvals.push.DebugStandInPushTokens
@@ -37,6 +39,8 @@ class AppContainer(
     val accounts: AccountStore,
     val links: PhoneLinkStore,
     val api: QeetIdApi,
+    /** The sealed files the administration session keeps its refresh token in. */
+    adminFiles: SealedFiles,
     val pushTokens: PushTokens,
     val connectivity: Connectivity,
     val scope: CoroutineScope,
@@ -56,6 +60,9 @@ class AppContainer(
     val pushSync = PushTokenSync(links, api, pushTokens, scope)
 
     val inbox = RequestInbox(links, api, scope, onUnlinkedByServer = pushTokens::stop)
+
+    /** An administrator's own session, for the administration screens; separate from the phone's link. */
+    val admin = AdminSession(adminFiles, AdminApi(api.baseUrl, api.client, api.userAgent))
 
     companion object {
         fun create(context: Context): AppContainer {
@@ -80,6 +87,7 @@ class AppContainer(
                         baseUrl = apiBaseUrl(BuildConfig.API_BASE_URL, BuildConfig.DEBUG),
                         userAgent = "QeetID-Android/${BuildConfig.VERSION_NAME}",
                     ),
+                adminFiles = files,
                 pushTokens = pushTokens,
                 connectivity = SystemConnectivity(app),
                 scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),

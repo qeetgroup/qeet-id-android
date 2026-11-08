@@ -39,11 +39,15 @@ object SignInNotifications {
         context.getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
     }
 
-    /** Shows the request [requestId]; nothing if notifications are off (the pending check still finds it). */
+    /**
+     * Shows the request [requestId], saying what's signing in from where when [body] has it; nothing if notifications
+     * are off (the pending check still finds it).
+     */
     @SuppressLint("MissingPermission") // Checked by NotificationAccess.enabled.
     fun show(
         context: Context,
         requestId: String,
+        body: String? = null,
     ) {
         ensureChannel(context)
         if (!NotificationAccess.enabled(context)) return
@@ -59,13 +63,14 @@ object SignInNotifications {
                 open,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
             )
+        val text = body ?: context.getString(R.string.notification_body)
         val notification =
             NotificationCompat
                 .Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_qeet_id)
                 .setContentTitle(context.getString(R.string.notification_title))
-                .setContentText(context.getString(R.string.notification_body))
-                .setStyle(NotificationCompat.BigTextStyle().bigText(context.getString(R.string.notification_body)))
+                .setContentText(text)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(text))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_STATUS)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

@@ -1,6 +1,5 @@
 package com.qeetgroup.qeetid.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,16 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.qeetgroup.qeetid.AppContainer
 import com.qeetgroup.qeetid.R
+import com.qeetgroup.qeetid.admin.NoPasskeys
+import com.qeetgroup.qeetid.admin.PasskeyPrompt
 import com.qeetgroup.qeetid.lock.UserVerification
 import com.qeetgroup.qeetrix.components.typography.QeetrixText
+import com.qeetgroup.qeetrix.components.typography.QeetrixTextSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextWeight
 import com.qeetgroup.qeetrix.foundation.accessibility.QeetrixAccessibility
@@ -43,6 +43,9 @@ val LocalAppContainer = staticCompositionLocalOf<AppContainer> { error("No AppCo
 /** Android's fingerprint, face or screen-lock prompt. */
 val LocalUserVerification = staticCompositionLocalOf<UserVerification> { error("No UserVerification") }
 
+/** The phone's passkey prompt, for an administrator's sign-in and step-ups. */
+val LocalPasskeys = staticCompositionLocalOf<PasskeyPrompt> { NoPasskeys }
+
 /** A screen: the page colour, the bar on top, the scrolling content, the actions pinned at the bottom. */
 @Composable
 fun Screen(
@@ -58,17 +61,13 @@ fun Screen(
     }
 }
 
-/** The Q-key, Qeet ID's app icon, in the theme's version: the app's own mark inside the app (welcome, locked). */
+/** Qeet ID's icon, the keyhole, at the size of a list's leading mark (see [BrandMark] for the hero sizes). */
 @Composable
 fun AppMark(
     modifier: Modifier = Modifier,
     size: Dp = APP_MARK_SIZE,
 ) {
-    Image(
-        painterResource(if (QeetrixTheme.isDark) R.drawable.qeet_id_mark_dark else R.drawable.qeet_id_mark_light),
-        contentDescription = stringResource(R.string.app_mark_description),
-        modifier = modifier.size(size),
-    )
+    BrandMark(modifier, size = size)
 }
 
 private val APP_MARK_SIZE = 48.dp
@@ -81,10 +80,11 @@ private val APP_MARK_SIZE = 48.dp
 fun LetterTile(
     text: String,
     modifier: Modifier = Modifier,
+    size: Dp = TILE_SIZE,
 ) {
     Box(
         modifier
-            .size(TILE_SIZE)
+            .size(size)
             .background(QeetrixTheme.colors.bgNeutralSubtle, QeetrixShapes.Control)
             .clearAndSetSemantics {},
         contentAlignment = Alignment.Center,
@@ -103,9 +103,9 @@ fun initialOf(name: String): String =
         ?.uppercase() ?: "?"
 
 /**
- * An action row in a bottom sheet (whose body supplies the side padding): a 20 dp icon and the label in `body.md`, red
- * when destructive. Qeetrix's menu items need a QeetrixMenu, so a sheet's actions are drawn here (logged as a Qeetrix
- * finding).
+ * An action row in a bottom sheet (whose body supplies the side padding): a 20 dp icon, the label in `body.md` and, if
+ * it helps, one line under it; red when destructive. Qeetrix's menu items need a QeetrixMenu, so a sheet's actions are
+ * drawn here (logged as a Qeetrix finding).
  */
 @Composable
 fun SheetAction(
@@ -114,8 +114,58 @@ fun SheetAction(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     danger: Boolean = false,
+    description: String? = null,
 ) {
     val colors = QeetrixTheme.colors
+    SheetAction(
+        leading = {
+            QeetrixIcon(
+                icon,
+                contentDescription = null,
+                size = QeetrixSize.IconMd,
+                tint = if (danger) colors.textDanger else colors.iconSubtle,
+            )
+        },
+        label = label,
+        onClick = onClick,
+        modifier = modifier,
+        danger = danger,
+        description = description,
+    )
+}
+
+/** [SheetAction] with an icon Qeetrix for Android doesn't have yet ([AppIconName]). */
+@Composable
+fun SheetAction(
+    icon: AppIconName,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    danger: Boolean = false,
+    description: String? = null,
+) {
+    val colors = QeetrixTheme.colors
+    SheetAction(
+        leading = {
+            AppIcon(icon, contentDescription = null, size = QeetrixSize.IconMd, tint = if (danger) colors.textDanger else colors.iconSubtle)
+        },
+        label = label,
+        onClick = onClick,
+        modifier = modifier,
+        danger = danger,
+        description = description,
+    )
+}
+
+@Composable
+private fun SheetAction(
+    leading: @Composable () -> Unit,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier,
+    danger: Boolean,
+    description: String?,
+) {
     Row(
         modifier
             .fillMaxWidth()
@@ -125,8 +175,11 @@ fun SheetAction(
         horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        QeetrixIcon(icon, contentDescription = null, size = QeetrixSize.IconMd, tint = if (danger) colors.textDanger else colors.iconSubtle)
-        QeetrixText(label, tone = if (danger) QeetrixTextTone.Danger else null)
+        leading()
+        Column {
+            QeetrixText(label, tone = if (danger) QeetrixTextTone.Danger else null)
+            if (description != null) QeetrixText(description, size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
+        }
     }
 }
 

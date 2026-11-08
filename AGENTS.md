@@ -31,8 +31,8 @@ qeet-context (L0)  →  qeet-id-context (L1)  →  qeet-id-server (contract + en
 | [docs/llm/workflows.md](docs/llm/workflows.md) | Common changes, step by step |
 | [docs/firebase.md](docs/firebase.md) | Push, with and without a Firebase project |
 
-The approved screens are the mockup in `qeet-id/mockups/android/` (not in this repository) and the Qeetrix design
-rules; product flow in `qeet-id-context/FLOWS/mfa.md`.
+The screens follow the Qeet ID mockups in `qeetgroup/qeet-mockups` (`products/qeet-id/screens/`, modules 01 to 05;
+not in this repository) and the Qeetrix design rules; product flow in `qeet-id-context/FLOWS/mfa.md`.
 
 ## Rules
 
@@ -44,7 +44,8 @@ rules; product flow in `qeet-id-context/FLOWS/mfa.md`.
 3. **No localhost default.** Release builds talk to `https://api.id.qeet.in` only (HTTPS enforced in code and by the
    network security config). Debug builds may use `qeetid.apiUrl` from `local.properties`, cleartext allowed.
 4. **A phone links only with a pairing code, and only when the person confirms.** A scanned code or a
-   `qeetidauth://pair` link only fills the form; Link phone sends it. Never accept or ask for an access token.
+   `qeetidauth://pair` link only fills the form; Link phone sends it. Linking never accepts or asks for an access
+   token.
 5. **Approving needs the number and the person.** Approve sends the 2-digit number from the sign-in screen, and only
    after `BiometricPrompt` (strong biometric or the screen lock) succeeds. A phone without a screen lock cannot
    approve; deny never needs verification.
@@ -58,6 +59,13 @@ rules; product flow in `qeet-id-context/FLOWS/mfa.md`.
    release builds then say they cannot be linked, debug builds link with a stand-in token.
 10. **Tests:** a unit test for every parser, store and API mapping; a Robolectric Compose test for every flow
     (`ui/AppFlowsTest.kt`). No screenshot tests.
+11. **Administration has its own session, apart from the link.** An administrator signs in with a passkey (Android's
+    Credential Manager, `admin/`) and gets their own Qeet ID session: the refresh token sealed in `admin-session`,
+    the access token in memory only, neither in UI state, a log or a notification. It is used only for the
+    administration routes (`AdminApi`), never for the link or approvals. Anything that gives or takes access asks
+    first: a passkey step-up (approve an access request, reactivate) or `BiometricPrompt` (suspend, stop all agents).
+    The app's signing certificate must be in `id.qeet.in/.well-known/assetlinks.json` (qeet-id-website) and its
+    `android:apk-key-hash:` origin in the server's `WEBAUTHN_RP_ORIGINS`, or passkey sign-in is refused.
 
 ## Commands
 

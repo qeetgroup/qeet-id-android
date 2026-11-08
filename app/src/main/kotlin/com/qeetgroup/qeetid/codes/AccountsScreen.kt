@@ -5,18 +5,22 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -39,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -46,26 +52,32 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import com.qeetgroup.qeetid.R
 import com.qeetgroup.qeetid.system.NotificationAccess
+import com.qeetgroup.qeetid.ui.AppIcon
+import com.qeetgroup.qeetid.ui.AppIconName
 import com.qeetgroup.qeetid.ui.LetterTile
 import com.qeetgroup.qeetid.ui.LinkPhone
 import com.qeetgroup.qeetid.ui.LocalAppContainer
+import com.qeetgroup.qeetid.ui.PageTitle
 import com.qeetgroup.qeetid.ui.ScanAccount
 import com.qeetgroup.qeetid.ui.Screen
 import com.qeetgroup.qeetid.ui.Settings
 import com.qeetgroup.qeetid.ui.SheetAction
 import com.qeetgroup.qeetid.ui.TypeKey
+import com.qeetgroup.qeetid.ui.deviceWord
 import com.qeetgroup.qeetid.ui.initialOf
+import com.qeetgroup.qeetid.ui.isTablet
+import com.qeetgroup.qeetid.ui.readingColumn
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlert
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlertTone
 import com.qeetgroup.qeetrix.components.alert.QeetrixAlertVariant
 import com.qeetgroup.qeetrix.components.badge.QeetrixBadge
 import com.qeetgroup.qeetrix.components.badge.QeetrixBadgeTone
+import com.qeetgroup.qeetrix.components.badge.QeetrixBadgeVariant
 import com.qeetgroup.qeetrix.components.button.QeetrixButton
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonSize
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonTone
 import com.qeetgroup.qeetrix.components.button.QeetrixButtonVariant
 import com.qeetgroup.qeetrix.components.button.QeetrixIconButton
-import com.qeetgroup.qeetrix.components.dialog.QeetrixConfirmationDialog
 import com.qeetgroup.qeetrix.components.dialog.QeetrixDialog
 import com.qeetgroup.qeetrix.components.dialog.QeetrixDialogIntent
 import com.qeetgroup.qeetrix.components.drawer.QeetrixBottomSheet
@@ -74,7 +86,6 @@ import com.qeetgroup.qeetrix.components.emptystate.QeetrixEmptyStateSize
 import com.qeetgroup.qeetrix.components.input.QeetrixSearchField
 import com.qeetgroup.qeetrix.components.input.QeetrixTextField
 import com.qeetgroup.qeetrix.components.list.QeetrixListItem
-import com.qeetgroup.qeetrix.components.list.QeetrixListItemIcon
 import com.qeetgroup.qeetrix.components.list.QeetrixPullToRefresh
 import com.qeetgroup.qeetrix.components.list.QeetrixSectionHeader
 import com.qeetgroup.qeetrix.components.navigation.QeetrixTopAppBar
@@ -91,7 +102,10 @@ import com.qeetgroup.qeetrix.components.typography.QeetrixText
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextSize
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextTone
 import com.qeetgroup.qeetrix.components.typography.QeetrixTextWeight
+import com.qeetgroup.qeetrix.foundation.shape.QeetrixShapes
+import com.qeetgroup.qeetrix.foundation.sizing.QeetrixSize
 import com.qeetgroup.qeetrix.foundation.spacing.QeetrixSpace
+import com.qeetgroup.qeetrix.icons.QeetrixIcon
 import com.qeetgroup.qeetrix.icons.QeetrixIconName
 import com.qeetgroup.qeetrix.theme.QeetrixTheme
 import kotlinx.coroutines.launch
@@ -143,10 +157,12 @@ fun AccountsScreen(
     val barScroll = rememberQeetrixTopAppBarScrollState()
     var actionsFor by remember { mutableStateOf<AccountRow?>(null) }
     var sheetOpen by remember { mutableStateOf(false) }
+    var addOpen by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf<AccountRow?>(null) }
     var renaming by remember { mutableStateOf<AccountRow?>(null) }
     var refreshing by remember { mutableStateOf(false) }
     var notificationsOn by remember { mutableStateOf(NotificationAccess.enabled(context)) }
+    val tablet = isTablet()
     LifecycleResumeEffect(Unit) {
         notificationsOn = NotificationAccess.enabled(context)
         onPauseOrDispose {}
@@ -192,7 +208,7 @@ fun AccountsScreen(
                         if (state.total == 0) {
                             stringResource(R.string.accounts_none)
                         } else {
-                            pluralStringResource(R.plurals.accounts_count, state.total, state.total)
+                            pluralStringResource(R.plurals.accounts_count, state.total, state.total, deviceWord())
                         },
                     size = QeetrixTopAppBarSize.Large,
                     scrollState = barScroll,
@@ -201,7 +217,7 @@ fun AccountsScreen(
                             QeetrixIconButton(
                                 QeetrixIconName.Plus,
                                 stringResource(R.string.accounts_add),
-                                onClick = onAdd,
+                                onClick = { addOpen = true },
                                 tone = QeetrixButtonTone.Neutral,
                             )
                         }
@@ -320,28 +336,60 @@ fun AccountsScreen(
                             )
                         }
                     }
-                    items(state.rows, key = { it.id }) { row ->
-                        Column(Modifier.background(QeetrixTheme.colors.surfaceRaised)) {
-                            AccountRowItem(
-                                row = row,
-                                hidden = state.hideCodes,
-                                selected = sheetOpen && actionsFor?.id == row.id,
-                                onActions = {
-                                    actionsFor = row
-                                    sheetOpen = true
-                                },
-                                onCopied = model::copied,
-                            )
-                            QeetrixSeparator(
-                                tone =
-                                    if (row ==
-                                        state.rows.last()
+                    if (tablet) {
+                        // Tablets: two columns of 4 dp cards, as on the mockup.
+                        items(state.rows.chunked(2), key = { pair -> pair.first().id }) { pair ->
+                            Row(
+                                Modifier.fillMaxWidth().padding(horizontal = QeetrixSpace.InsetLg, vertical = QeetrixSpace.GapSm),
+                                horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
+                            ) {
+                                for (row in pair) {
+                                    Box(
+                                        Modifier
+                                            .weight(1f)
+                                            .border(1.dp, QeetrixTheme.colors.borderDefault, QeetrixShapes.Surface)
+                                            .clip(QeetrixShapes.Surface),
                                     ) {
-                                        QeetrixSeparatorTone.Default
-                                    } else {
-                                        QeetrixSeparatorTone.Subtle
+                                        AccountRowItem(
+                                            row = row,
+                                            hidden = state.hideCodes,
+                                            selected = sheetOpen && actionsFor?.id == row.id,
+                                            onActions = {
+                                                actionsFor = row
+                                                sheetOpen = true
+                                            },
+                                            onCopied = model::copied,
+                                        )
+                                    }
+                                }
+                                if (pair.size == 1) Spacer(Modifier.weight(1f))
+                            }
+                        }
+                    }
+                    if (!tablet) {
+                        items(state.rows, key = { it.id }) { row ->
+                            Column(Modifier.background(QeetrixTheme.colors.surfaceRaised)) {
+                                AccountRowItem(
+                                    row = row,
+                                    hidden = state.hideCodes,
+                                    selected = sheetOpen && actionsFor?.id == row.id,
+                                    onActions = {
+                                        actionsFor = row
+                                        sheetOpen = true
                                     },
-                            )
+                                    onCopied = model::copied,
+                                )
+                                QeetrixSeparator(
+                                    tone =
+                                        if (row ==
+                                            state.rows.last()
+                                        ) {
+                                            QeetrixSeparatorTone.Default
+                                        } else {
+                                            QeetrixSeparatorTone.Subtle
+                                        },
+                                )
+                            }
                         }
                     }
                 }
@@ -367,26 +415,53 @@ fun AccountsScreen(
                 renaming = live
             })
             QeetrixSeparator()
-            SheetAction(QeetrixIconName.Trash, stringResource(R.string.action_delete_account), danger = true, onClick = {
+            SheetAction(QeetrixIconName.Trash, stringResource(R.string.action_remove, deviceWord()), danger = true, onClick = {
                 sheetOpen = false
                 deleting = live
             })
         }
     }
 
-    deleting?.let { row ->
-        QeetrixConfirmationDialog(
-            open = true,
-            onOpenChange = { if (!it) deleting = null },
-            title = stringResource(R.string.delete_title, row.issuer),
-            description = stringResource(R.string.delete_body, row.label.ifBlank { row.issuer }, row.issuer),
-            confirmLabel = stringResource(R.string.action_delete_account),
-            onConfirm = {
-                model.delete(row)
-                deleting = null
+    // Add an account: the two ways in, each said in a line, and that codes stay on the phone.
+    QeetrixBottomSheet(
+        open = addOpen,
+        onOpenChange = { addOpen = it },
+        title = stringResource(R.string.add_title),
+        description = stringResource(R.string.add_subtitle),
+    ) {
+        SheetAction(AppIconName.QrCode, stringResource(R.string.add_scan), description = stringResource(R.string.add_scan_note), onClick = {
+            addOpen = false
+            onAdd()
+        })
+        SheetAction(
+            QeetrixIconName.Keyboard,
+            stringResource(
+                R.string.add_type,
+            ),
+            description = stringResource(R.string.add_type_note),
+            onClick = {
+                addOpen = false
+                onTypeKey()
             },
-            intent = QeetrixDialogIntent.Danger,
         )
+        QeetrixSeparator()
+        Row(Modifier.padding(vertical = QeetrixSpace.InsetMd), horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm)) {
+            QeetrixIcon(
+                QeetrixIconName.Lock,
+                null,
+                Modifier.padding(top = 2.dp),
+                size = QeetrixSize.IconSm,
+                tint = QeetrixTheme.colors.iconSubtle,
+            )
+            QeetrixText(stringResource(R.string.add_stays, deviceWord()), size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
+        }
+    }
+
+    deleting?.let { row ->
+        RemoveDialog(row, onDismiss = { deleting = null }, onRemove = {
+            model.delete(row)
+            deleting = null
+        })
     }
 
     renaming?.let { row ->
@@ -403,23 +478,35 @@ private fun ApprovalsRow(
     onClick: () -> Unit,
 ) {
     val link = state.link
+    val colors = QeetrixTheme.colors
     QeetrixListItem(
         title = stringResource(R.string.approvals_row_title),
         description =
-            if (link !=
-                null
-            ) {
-                stringResource(R.string.approvals_row_linked, link.deviceName)
-            } else {
-                stringResource(R.string.approvals_row_not_linked)
+            when {
+                link == null -> stringResource(R.string.approvals_row_not_linked, deviceWord())
+                link.accountEmail != null -> stringResource(R.string.approvals_row_for, link.accountEmail)
+                else -> stringResource(R.string.approvals_row_linked, link.deviceName)
             },
         onClick = onClick,
-        leading = { QeetrixListItemIcon(QeetrixIconName.CircleCheck) },
+        leading = {
+            Box(
+                Modifier
+                    .size(40.dp)
+                    .background(if (link != null) colors.bgSuccessSubtle else colors.bgNeutralSubtle, QeetrixShapes.Control),
+                contentAlignment = Alignment.Center,
+            ) {
+                AppIcon(AppIconName.ShieldCheck, null, tint = if (link != null) colors.iconSuccess else colors.iconSubtle)
+            }
+        },
         trailing = {
             if (link != null) {
                 QeetrixBadge(stringResource(R.string.badge_on), tone = QeetrixBadgeTone.Success)
             } else {
-                QeetrixBadge(stringResource(R.string.badge_off))
+                QeetrixBadge(
+                    stringResource(R.string.approvals_row_link),
+                    tone = QeetrixBadgeTone.Brand,
+                    variant = QeetrixBadgeVariant.Solid,
+                )
             }
         },
     )
@@ -478,40 +565,92 @@ private fun EmptyAccounts(
     onTypeKey: () -> Unit,
     onLink: () -> Unit,
 ) {
-    Box(Modifier.fillMaxWidth().padding(top = QeetrixSpace.LayoutLg), contentAlignment = Alignment.Center) {
-        QeetrixEmptyState(
-            stringResource(R.string.accounts_empty_title),
-            icon = QeetrixIconName.Clock,
-            description = stringResource(R.string.accounts_empty_body),
-            actions = {
-                QeetrixButton(stringResource(R.string.accounts_scan_qr), onClick = onScan, icon = QeetrixIconName.Camera)
-                QeetrixButton(stringResource(R.string.accounts_type_key), onClick = onTypeKey, variant = QeetrixButtonVariant.Ghost)
-            },
-            footer =
-                if (linked) {
-                    null
-                } else {
-                    {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            QeetrixText(
-                                stringResource(R.string.accounts_using_qeet_id),
-                                size = QeetrixTextSize.Sm,
-                                tone = QeetrixTextTone.Subtle,
-                            )
-                            QeetrixButton(
-                                stringResource(R.string.accounts_link_phone),
-                                onClick = onLink,
-                                variant = QeetrixButtonVariant.Ghost,
-                                size = QeetrixButtonSize.Sm,
-                            )
-                        }
-                    }
-                },
+    val colors = QeetrixTheme.colors
+    Column(
+        Modifier.readingColumn().padding(horizontal = QeetrixSpace.InsetXl, vertical = QeetrixSpace.LayoutMd),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Box(Modifier.size(56.dp).background(colors.bgBrandSubtle, QeetrixShapes.Control), contentAlignment = Alignment.Center) {
+            AppIcon(AppIconName.QrCode, null, size = 28.dp, tint = colors.iconBrand)
+        }
+        Spacer(Modifier.height(QeetrixSpace.InsetLg))
+        PageTitle(stringResource(R.string.accounts_empty_title), stringResource(R.string.accounts_empty_body), centred = true)
+        Spacer(Modifier.height(QeetrixSpace.LayoutSm))
+        QeetrixButton(
+            stringResource(R.string.accounts_scan_qr),
+            onClick = onScan,
+            size = QeetrixButtonSize.Lg,
+            fullWidth = true,
         )
+        Spacer(Modifier.height(QeetrixSpace.GapSm))
+        QeetrixButton(
+            stringResource(R.string.accounts_type_key),
+            onClick = onTypeKey,
+            variant = QeetrixButtonVariant.Ghost,
+            size = QeetrixButtonSize.Lg,
+            icon = QeetrixIconName.Keyboard,
+            fullWidth = true,
+        )
+        if (!linked) {
+            Spacer(Modifier.height(QeetrixSpace.InsetLg))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                QeetrixText(stringResource(R.string.accounts_using_qeet_id), size = QeetrixTextSize.Sm, tone = QeetrixTextTone.Subtle)
+                QeetrixButton(
+                    stringResource(R.string.accounts_link_phone, deviceWord()),
+                    onClick = onLink,
+                    variant = QeetrixButtonVariant.Ghost,
+                    size = QeetrixButtonSize.Sm,
+                )
+            }
+        }
     }
 }
 
-/** Screen 26: rename, on this phone only. */
+/**
+ * Remove from this phone: Qeetrix's danger dialog, the question as its title, what stops, and how not to get locked out
+ * of the site; Cancel, and a red Remove.
+ */
+@Composable
+private fun RemoveDialog(
+    row: AccountRow,
+    onDismiss: () -> Unit,
+    onRemove: () -> Unit,
+) {
+    val colors = QeetrixTheme.colors
+    val site = row.issuer.ifBlank { stringResource(R.string.account_unnamed) }
+    QeetrixDialog(
+        open = true,
+        onOpenChange = { if (!it) onDismiss() },
+        title = stringResource(R.string.remove_title, site),
+        description = stringResource(R.string.remove_body, row.label.ifBlank { site }, deviceWord()),
+        intent = QeetrixDialogIntent.Danger,
+        footer = {
+            QeetrixButton(
+                stringResource(R.string.action_cancel),
+                onClick = onDismiss,
+                variant = QeetrixButtonVariant.Ghost,
+                tone = QeetrixButtonTone.Neutral,
+            )
+            QeetrixButton(stringResource(R.string.action_remove_short), onClick = onRemove, tone = QeetrixButtonTone.Danger)
+        },
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(QeetrixSpace.GapSm)) {
+            QeetrixIcon(
+                QeetrixIconName.TriangleAlert,
+                null,
+                Modifier.padding(top = 2.dp),
+                size = QeetrixSize.IconSm,
+                tint = colors.iconWarning,
+            )
+            QeetrixText(stringResource(R.string.remove_warning, site), size = QeetrixTextSize.Sm)
+        }
+    }
+}
+
+/**
+ * Rename: Qeetrix's dialog with the site's name and the account. The name changes on this phone only and the site isn't
+ * told; Save waits for a name.
+ */
 @Composable
 private fun RenameDialog(
     row: AccountRow,
@@ -520,31 +659,38 @@ private fun RenameDialog(
 ) {
     val service = rememberTextFieldState(row.issuer)
     val account = rememberTextFieldState(row.label)
-    var error by remember { mutableStateOf<String?>(null) }
-    val required = stringResource(R.string.rename_service_required)
+    val empty = service.text.isBlank()
+    val site = row.issuer.ifBlank { stringResource(R.string.account_unnamed) }
     QeetrixDialog(
         open = true,
         onOpenChange = { if (!it) onDismiss() },
         title = stringResource(R.string.rename_title),
-        description = stringResource(R.string.rename_body),
+        description = stringResource(R.string.rename_body, deviceWord(), site),
         footer = {
-            QeetrixButton(stringResource(R.string.action_cancel), onClick = onDismiss, variant = QeetrixButtonVariant.Ghost)
-            QeetrixButton(stringResource(R.string.action_save), onClick = {
-                val issuer = service.text.toString().trim()
-                if (issuer.isEmpty()) {
-                    error = required
-                } else {
-                    onSave(issuer, account.text.toString().trim())
-                }
-            })
+            QeetrixButton(
+                stringResource(R.string.action_cancel),
+                onClick = onDismiss,
+                variant = QeetrixButtonVariant.Ghost,
+                tone = QeetrixButtonTone.Neutral,
+            )
+            QeetrixButton(
+                stringResource(R.string.action_save),
+                onClick = { onSave(service.text.toString().trim(), account.text.toString().trim()) },
+                enabled = !empty,
+            )
         },
     ) {
         Column(
             Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
             verticalArrangement = Arrangement.spacedBy(QeetrixSpace.GapMd),
         ) {
-            QeetrixTextField(service, stringResource(R.string.rename_service), error = error)
-            QeetrixTextField(account, stringResource(R.string.rename_account))
+            QeetrixTextField(
+                service,
+                stringResource(R.string.rename_service),
+                error = if (empty) stringResource(R.string.rename_service_required) else null,
+                startAdornment = { LetterTile(initialOf(service.text.toString().ifBlank { site }), size = 24.dp) },
+            )
+            QeetrixTextField(account, stringResource(R.string.rename_account), optional = true)
         }
     }
 }

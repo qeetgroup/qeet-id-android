@@ -7,6 +7,7 @@ import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
+import com.qeetgroup.qeetid.admin.CredentialManagerPasskeys
 import com.qeetgroup.qeetid.approvals.push.SignInNotifications
 import com.qeetgroup.qeetid.lock.BiometricUserVerification
 import com.qeetgroup.qeetid.ui.QeetIdApp
@@ -31,7 +32,8 @@ class MainActivity : FragmentActivity() {
         SignInNotifications.ensureChannel(this)
         if (savedInstanceState == null) handle(intent)
         val verification = BiometricUserVerification(this)
-        setContent { QeetIdApp(container, verification) }
+        val passkeys = CredentialManagerPasskeys(this)
+        setContent { QeetIdApp(container, verification, passkeys) }
     }
 
     override fun onNewIntent(intent: Intent) {

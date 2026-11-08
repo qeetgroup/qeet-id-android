@@ -163,6 +163,8 @@ dependencies {
     implementation(libs.lifecycle.process)
     implementation(libs.navigation.compose)
     implementation(libs.biometric)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
     implementation(libs.camera.camera2)
     implementation(libs.camera.lifecycle)
     implementation(libs.camera.view)

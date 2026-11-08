@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Only for the window and the launch screen, which draw before Compose: Qeetrix's color.surface.canvas, and the
+         icon's Qeet orange (#D04800, Qeetrix bg.brand.bold) behind the white keyhole. Compose takes every colour from
+         QeetrixTheme. -->
+    <color name="launch_canvas">#FBFAF9</color>
+    <color name="launch_icon_background">#D04800</color>
+</resources>

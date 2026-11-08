@@ -113,6 +113,7 @@ object TestContainers {
             accounts = AccountStore(files),
             links = PhoneLinkStore(files),
             api = QeetIdApi(api, now = now),
+            adminFiles = files,
             pushTokens = pushTokens,
             connectivity = connectivity,
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
