@@ -79,7 +79,7 @@ scripts/fetch-qeetrix.sh          # once, and whenever qeetrix.tag/qeetrix.commi
 
 ## What CI enforces
 
-`ci.yml` · **Verify** (pull requests into `develop`, `release/**` and `main`, and by hand): Gradle wrapper validation,
+`ci.yml` · **Verify** (pull requests into `develop` and `main`, and by hand; a release branch is checked once, on its pull request into `main`): Gradle wrapper validation,
 then `./gradlew :app:ktlintCheck :app:lint` (Android Lint compiles the app). The full gate, `./gradlew build` (debug
 and release builds, unit and Compose UI tests), runs locally before every push, not in CI. `security.yml`: gitleaks
 (free CLI, checksum-pinned) over the history, on the same pull requests. `codeql.yml`: CodeQL, skipped while the

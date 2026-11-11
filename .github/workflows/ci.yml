@@ -1,12 +1,13 @@
 name: CI
 
 # Verify: the essential checks, kept short. Gradle wrapper validation, ktlint (formatting and style) and Android Lint,
-# which compiles the app. Runs on pull requests into develop, a release/YEAR.MONTH.0 branch and main, and on demand.
+# which compiles the app. Runs on pull requests into develop and main (a release branch is checked once, on its pull
+# request into main), and on demand.
 # The full gate, ./gradlew build (debug and release builds, unit and Compose UI tests), runs locally before every push
 # (AGENTS.md, "Before you finish").
 on:
   pull_request:
-    branches: [develop, "release/**", main]
+    branches: [develop, main]
   workflow_dispatch:
 
 permissions:
