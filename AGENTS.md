@@ -79,13 +79,21 @@ scripts/fetch-qeetrix.sh          # once, and whenever qeetrix.tag/qeetrix.commi
 
 ## What CI enforces
 
-`ci.yml` (pull requests into `main`, pushes to `main`, manual): Gradle wrapper validation, then `./gradlew build`.
-`security.yml`: gitleaks (free CLI, checksum-pinned) over the history. `codeql.yml`: CodeQL, skipped while the
-repository is private. There is no release or Play Store workflow yet.
+`ci.yml` · **Verify** (pull requests into `develop`, `release/**` and `main`, and by hand): Gradle wrapper validation,
+then `./gradlew :app:ktlintCheck :app:lint` (Android Lint compiles the app). The full gate, `./gradlew build` (debug
+and release builds, unit and Compose UI tests), runs locally before every push, not in CI. `security.yml`: gitleaks
+(free CLI, checksum-pinned) over the history, on the same pull requests. `codeql.yml`: CodeQL, skipped while the
+repository is private. Dependabot proposes Gradle and Actions updates monthly into `develop`. There is no Play Store
+workflow yet: it needs the upload key and the Play Console app.
 
-## Branches
+## Branches and releases
 
-Work on `develop`; `main` is what ships. A pull request from `develop` into `main` runs CI.
+The app ships with the Qeet ID monthly release and carries its number: `develop` is where changes land, `main` is what
+ships. For a month the app changes, `release/YEAR.MONTH.0` is cut from `develop` (e.g. `release/2027.1.0`); its first
+commit sets `qeetid.versionName` to that version (no leading zeros) and raises `qeetid.versionCode`. After the cut it
+takes fixes only, each made on `develop` first and then copied over; testers install it from Play internal testing.
+After sign-off it merges into `main`, is tagged `v2027.1.0` and goes to the store. An urgent fix afterwards is
+`hotfix/YEAR.MONTH.N` from `main` (e.g. `hotfix/2027.1.1`). A month without app changes ships no app release.
 
 ## Before you finish
 
