@@ -67,9 +67,12 @@ commands:
   format: ./gradlew :app:ktlintFormat
 
 ci:
-  workflows: [ci.yml, security.yml, codeql.yml]
-  runs_on: pull requests into main, pushes to main, workflow_dispatch
-  release: none yet (no Play Store workflow)
+  workflows: [ci.yml]
+  verify: "ci.yml Verify: wrapper validation, ktlintCheck, lint, gitleaks; ./gradlew build runs locally before every push"
+  runs_on: pull requests into develop and main; workflow_dispatch
+  branches: "develop · main (what ships) · release/YEAR.MONTH.0 (the month's Qeet ID release; sets versionName) · hotfix/YEAR.MONTH.N"
+  dependencies: ".github/dependabot.yml: gradle + github-actions, monthly into develop"
+  release: none yet (no Play Store workflow; needs the upload key and the Play Console app)
 
 security:
   sensitive_paths:

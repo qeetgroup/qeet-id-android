@@ -62,7 +62,10 @@ To deliver a push message by hand instead: `adb shell am broadcast -n com.qeetgr
 
 ## Release (not automated yet)
 
-1. Raise `qeetid.versionCode` and `qeetid.versionName` in `gradle.properties`; note it in `CHANGELOG.md`.
+0. Cut `release/YEAR.MONTH.0` from `develop` for the month's Qeet ID release (e.g. `release/2027.1.0`).
+1. On it, set `qeetid.versionName` to that version and raise `qeetid.versionCode` in `gradle.properties`; note it in
+   `CHANGELOG.md`.
 2. Put `app/google-services.json` and `keystore.properties` (with the upload keystore) in place.
 3. `./gradlew build :app:bundleRelease`.
-4. Upload the AAB in the Play Console.
+4. Upload the AAB in the Play Console (internal testing first, for testers).
+5. After sign-off, merge the release branch into `main` with a merge commit and tag `vYEAR.MONTH.N`.

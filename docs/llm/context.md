@@ -96,8 +96,8 @@ account".
 ## Testing and CI
 
 `./gradlew build` is the gate: debug and release (R8) builds, JVM unit tests, Robolectric Compose tests for every flow,
-Android Lint and ktlint, all with warnings as errors. CI (`ci.yml`) runs it on pull requests into `main`, pushes to
-`main` and on demand. No instrumented tests and no screenshot tests.
+Android Lint and ktlint, all with warnings as errors; run it locally before every push. CI (`ci.yml`, Verify) runs
+ktlint and Android Lint on pull requests into `develop` and `main`, and on demand. No instrumented tests and no screenshot tests.
 
 ## Known gaps
 

@@ -19,7 +19,7 @@ credential that approves Qeet ID sign-ins. This page says how they are protected
   `scripts/fetch-qeetrix.sh` refuses a clone whose commit differs.
 - **Dependencies** are pinned in `gradle/libs.versions.toml`; the Gradle wrapper is pinned by checksum and validated
   in CI.
-- **gitleaks** scans the history for secrets in CI. `google-services.json`, keystores and `keystore.properties` are
+- **gitleaks** scans each pull request's commits for secrets in CI. `google-services.json`, keystores and `keystore.properties` are
   git-ignored.
 
 ## 📅 Supported versions

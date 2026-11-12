@@ -1,13 +1,13 @@
 name: CI
 
-# The gate: Gradle wrapper validation, then ./gradlew build — debug and release builds, unit and Compose UI tests,
-# Android Lint and ktlint. Runs on pull requests into main, on main after each merge, and on demand; develop is covered
-# by its pull request.
+# Verify: the essential checks, kept short. Gradle wrapper validation, ktlint (formatting and style), Android Lint (which
+# compiles the app) and a secret scan of the pull request. Dependency advisories come from Dependabot alerts. Runs on pull requests into develop and main (a release branch is checked once, on its pull
+# request into main), and on demand.
+# The full gate, ./gradlew build (debug and release builds, unit and Compose UI tests), runs locally before every push
+# (AGENTS.md, "Before you finish").
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+    branches: [develop, main]
   workflow_dispatch:
 
 permissions:
@@ -22,12 +22,15 @@ env:
   ANDROID_BUILD_TOOLS: "build-tools;36.0.0"
 
 jobs:
-  build:
-    name: Build, test and lint
+  verify:
+    name: Verify
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # the pull request's commits, for the secret scan
+          persist-credentials: false
       - name: Validate the Gradle wrapper
         uses: gradle/actions/wrapper-validation@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
@@ -40,15 +43,26 @@ jobs:
       - name: Fetch Qeetrix for Android
         run: scripts/fetch-qeetrix.sh
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
-        with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-      - name: Build, test and lint
-        run: ./gradlew build
+      - name: Format and lint
+        run: ./gradlew :app:ktlintCheck :app:lint
+
+      # The free gitleaks CLI (the gitleaks Action needs a paid licence for an organisation), pinned and
+      # checksum-verified, over this pull request's commits.
+      - name: Secret scan
+        if: github.event_name == 'pull_request'
+        env:
+          GITLEAKS_VERSION: 8.30.1
+          GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$archive" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          (cd "$RUNNER_TEMP" && echo "${GITLEAKS_SHA256}  ${archive}" | sha256sum --check --strict && tar -xzf "$archive" gitleaks)
+          "$RUNNER_TEMP/gitleaks" git --redact --exit-code 1 --log-opts="$BASE_SHA..$HEAD_SHA" .
       - name: Reports
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: reports
-          path: |
-            app/build/reports/
-            app/build/test-results/
+          path: app/build/reports/
