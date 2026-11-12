@@ -2,7 +2,7 @@
 # Qeetrix for Android's, which the app builds from source in the same Gradle run.
 
 [versions]
-agp = "9.5.0"
+agp = "9.5.1"
 kotlin = "2.4.21"
 compose-bom = "2026.09.00"
 activity-compose = "1.13.0"
