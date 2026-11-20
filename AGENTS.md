@@ -16,7 +16,7 @@ It is a **client of a contract it does not own**: `qeet-id-server`'s `/v1/mfa/pu
 ## Context hierarchy
 
 ```text
-qeet-context (L0)  →  qeet-id-context (L1)  →  qeet-id-server (contract + enforcement)
+qeet-context (L0)  →  qeet-id-files (L1)  →  qeet-id-server (contract + enforcement)
                                             →  qeet-id-android (L2 — this repository)
 ```
 
@@ -32,7 +32,7 @@ qeet-context (L0)  →  qeet-id-context (L1)  →  qeet-id-server (contract + en
 | [docs/firebase.md](docs/firebase.md) | Push, with and without a Firebase project |
 
 The screens follow the Qeet ID mockups in `qeetgroup/qeet-mockups` (`products/qeet-id/screens/`, modules 01 to 05;
-not in this repository) and the Qeetrix design rules; product flow in `qeet-id-context/FLOWS/mfa.md`.
+not in this repository) and the Qeetrix design rules; product flow in `qeet-id-files/TAD.md` §6.
 
 ## Rules
 
