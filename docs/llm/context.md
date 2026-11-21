@@ -13,7 +13,7 @@ compile and target SDK 37, one module. Application id `com.qeetgroup.qeetid`, na
 ## Context inheritance
 
 ```text
-qeet-context (L0)  →  qeet-id-files (L1)  →  qeet-id-server (contract + enforcement)
+qeet-context (L0)  →  qeet-id-context (L1)  →  qeet-id-server (contract + enforcement)
                                             →  qeet-id-android (L2 — this document)
 ```
 
@@ -110,4 +110,4 @@ ktlint and Android Lint on pull requests into `develop` and `main`, and on deman
 ## Documentation authority
 
 Source > `qeet-id-server`'s `/v1/mfa/push/*` handlers > the mockup > README. Product-level narrative:
-`qeet-id-files/TAD.md` §6.
+`qeet-id-context/FLOWS/mfa.md`.

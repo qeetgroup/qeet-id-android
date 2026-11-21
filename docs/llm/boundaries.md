@@ -1,7 +1,7 @@
 # Boundaries — qeet-id-android
 
 **Level:** L2 · **Last verified:** 2026-11-06
-**Verification scope:** ownership from `qeet-id-files`; routes and storage read from source.
+**Verification scope:** ownership from `qeet-id-context`; routes and storage read from source.
 
 ## Owns
 
