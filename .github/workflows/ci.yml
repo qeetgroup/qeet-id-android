@@ -1,13 +1,13 @@
 name: CI
 
 # Verify: the essential checks, kept short. Gradle wrapper validation, ktlint (formatting and style), Android Lint (which
-# compiles the app) and a secret scan of the pull request. Dependency advisories come from Dependabot alerts. Runs on pull requests into develop and main (a release branch is checked once, on its pull
-# request into main), and on demand.
+# compiles the app) and a secret scan of the pull request. Dependency advisories come from Dependabot alerts. Runs on pull requests into develop, release/* and
+# main, and on demand.
 # The full gate, ./gradlew build (debug and release builds, unit and Compose UI tests), runs locally before every push
 # (AGENTS.md, "Before you finish").
 on:
   pull_request:
-    branches: [develop, main]
+    branches: [develop, "release/**", main]
   workflow_dispatch:
 
 permissions:
@@ -43,8 +43,9 @@ jobs:
       - name: Fetch Qeetrix for Android
         run: scripts/fetch-qeetrix.sh
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      # Dependencies come through Google's mirror of Maven Central first (the init script says why).
       - name: Format and lint
-        run: ./gradlew :app:ktlintCheck :app:lint
+        run: ./gradlew --init-script .github/maven-central-mirror.init.gradle.kts :app:ktlintCheck :app:lint
 
       # The free gitleaks CLI (the gitleaks Action needs a paid licence for an organisation), pinned and
       # checksum-verified, over this pull request's commits.

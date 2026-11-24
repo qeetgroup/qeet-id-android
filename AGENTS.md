@@ -79,9 +79,9 @@ scripts/fetch-qeetrix.sh          # once, and whenever qeetrix.tag/qeetrix.commi
 
 ## What CI enforces
 
-`ci.yml` · **Verify**, the only workflow (pull requests into `develop` and `main`, and by hand; a release branch is
-checked once, on its pull request into `main`): Gradle wrapper validation, `./gradlew :app:ktlintCheck :app:lint`
-(Android Lint compiles the app), and gitleaks (free CLI, checksum-pinned) over the pull request's commits. The full
+`ci.yml` · **Verify**, the only workflow (pull requests into `develop`, `release/**` and `main`, and by hand): Gradle
+wrapper validation, `./gradlew :app:ktlintCheck :app:lint` (Android Lint compiles the app; in CI, dependencies come
+through Google's mirror of Maven Central, `.github/maven-central-mirror.init.gradle.kts`), and gitleaks (free CLI, checksum-pinned) over the pull request's commits. The full
 gate, `./gradlew build` (debug and release builds, unit and Compose UI tests), runs locally before every push, not in
 CI. Dependency advisories come from Dependabot alerts, and Dependabot proposes Gradle and Actions updates monthly into
 `develop`. There is no Play Store
